@@ -101,3 +101,6 @@ build/Release
 node_modules
 
 # Created by .ignore support plugin (hsz.mobi)
+
+app/**/generated*.*
+.sass-cache/
