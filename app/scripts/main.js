@@ -6,6 +6,6 @@ import { provide } from '@angular/core';
 
 bootstrap(App, [
   ROUTER_PROVIDERS,
-  provide(APP_BASE_HREF, {useValue: '/'}),
-  provide(LocationStrategy, {useClass: HashLocationStrategy})
+  provide(APP_BASE_HREF, {useValue: '#!/'}),
+  //provide(LocationStrategy, {useClass: HashLocationStrategy})
 ]).catch(err => console.error(err));
