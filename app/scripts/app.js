@@ -1,27 +1,31 @@
-//import {Main} from './modules/main/index'
-//import {APP_BASE_HREF, ROUTER_PROVIDERS, ROUTER_DIRECTIVES, RouteConfig, RouteParams, LocationStrategy, HashLocationStrategy} from '@angular/router';
-//import {provide, Component} from '@angular/core';
-//
-//@Component({
-//  selector: '#application',
-//  viewProviders: [
-//    ROUTER_PROVIDERS,
-//    provide(APP_BASE_HREF, {useValue: '/'}),
-//    provide(LocationStrategy, {useClass: HashLocationStrategy})
-//  ],
-//  template: `
-//    <h1>The app goes here</h1>
-//  `
-//})
-//@RouteConfig([
-//  { path: '/', component: Main, name: 'Main', useAsDefault: true }
-//])
-//export class App {}
-
+import { Main } from './modules/main/index'
+import { Header } from './modules/header/index'
+import { Routes, Router, ROUTER_DIRECTIVES } from '@angular/router';
 import { Component } from '@angular/core';
 
 @Component({
   selector: '#application',
-  template: '<h1>Foo Bar</h1>'
+  template: `
+    <app-header></app-header>
+    <router-outlet></router-outlet>
+  `,
+  directives: [ Header, ROUTER_DIRECTIVES ]
 })
-export class App { }
+@Routes([
+  { path: '/main', component: Main }
+])
+export class App {
+
+  static get parameters() {
+    return [[Router]];
+  }
+
+  constructor(router){
+    this.router = router
+  }
+
+  ngOnInit() {
+    this.router.navigate(['/main']);
+  }
+
+}
