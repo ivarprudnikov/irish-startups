@@ -52,7 +52,6 @@ module.exports = function (grunt) {
           open: true,
           middleware: function (connect, options, middlewares) {
             var additionalMiddlewares = [];
-            additionalMiddlewares.push(serveStatic('.tmp'));
             additionalMiddlewares.push(['/node_modules', serveStatic('./node_modules')]);
             additionalMiddlewares.push(serveStatic(appConfig.app));
             return additionalMiddlewares.concat(middlewares);
