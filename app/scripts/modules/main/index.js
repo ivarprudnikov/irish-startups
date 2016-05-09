@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { MdButton } from '@angular2-material/button';
 import { MD_SIDENAV_DIRECTIVES } from '@angular2-material/sidenav';
 import { Search } from './search'
+import { MapToIterablePipe } from '../util/mapToIterable'
 
 @Component({
   selector: 'main-section',
@@ -10,12 +11,14 @@ import { Search } from './search'
   template: `
     <section class="container">
       <h1>Main component</h1>
+      <button md-raised-button="" (click)="list()">Go!</button>
       <ul>
-        <li *ngFor="let item of list">{{item.id}}</li>
+        <li *ngFor="let item of items | mapToIterable">{{item.key}}</li>
       </ul>
     </section>
   `,
-  providers: [Search]
+  providers: [ Search ],
+  pipes: [ MapToIterablePipe ]
 })
 export class Main {
 
@@ -29,9 +32,9 @@ export class Main {
 
   list(){
     this.searchService.list()
-      .subscribe({
-        heroes => this.list = heroes,
-        error =>  this.errorMessage = error
-    });
+      .subscribe(
+        items => { this.items = items },
+        error => { this.errorMessage = error }
+      )
   }
 }

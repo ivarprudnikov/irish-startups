@@ -1,5 +1,7 @@
 import { Http } from '@angular/http'
 import { Injectable } from '@angular/core';
+import { map } from 'rxjs/add/operator/map';
+import { catch } from 'rxjs/add/operator/catch';
 
 @Injectable()
 export class Search {
@@ -27,7 +29,8 @@ export class Search {
       throw new Error('Bad response status: ' + res.status);
     }
     let body = res.json();
-    return body.data || { };
+
+    return body || { };
   }
 
   handleError(error) {
