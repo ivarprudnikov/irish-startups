@@ -57,6 +57,12 @@ module.exports = function (grunt) {
             return additionalMiddlewares.concat(middlewares);
           }
         }
+      },
+      dist: {
+        options: {
+          open: true,
+          base: '<%= yeoman.dist %>'
+        }
       }
     },
 
@@ -72,7 +78,7 @@ module.exports = function (grunt) {
 
     // Compiles Sass to CSS and generates necessary files if requested
     sass: {
-      dist: {
+      dev: {
         options: {
           style: 'expanded'
         },
@@ -93,18 +99,169 @@ module.exports = function (grunt) {
       options: {
         transform: ['babelify']
       }
+    },
+
+    // Reads HTML for usemin blocks to enable smart builds that automatically
+    // concat, minify and revision files. Creates configurations in memory so
+    // additional tasks can operate on them
+    useminPrepare: {
+      html: '<%= yeoman.app %>/index.html',
+      options: {
+        dest: '<%= yeoman.dist %>',
+        flow: {
+          html: {
+            steps: {
+              js: ['concat'],
+              css: ['concat']
+            },
+            post: {}
+          }
+        }
+      }
+    },
+
+    // Performs rewrites based on filerev and the useminPrepare configuration
+    usemin: {
+      html: ['<%= yeoman.dist %>/{,*/}*.html'],
+      css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
+      options: {
+        assetsDirs: [
+          '<%= yeoman.dist %>',
+          '<%= yeoman.dist %>/images',
+          '<%= yeoman.dist %>/styles'
+        ]
+      }
+    },
+
+    // compress css
+    ///////////////////////
+    cssmin: {
+      options: {
+        banner: '',
+        report: 'min'
+      },
+      dist: {
+        files: [
+          {
+            expand: true,
+            cwd: '<%= yeoman.dist %>',
+            src: '**/*.css',
+            dest: '<%= yeoman.dist %>'
+          }
+        ]
+      }
+    },
+
+    htmlmin: {
+      dist: {
+        options: {
+          // collapseWhitespace: true,
+          // conservativeCollapse: true,
+          // collapseBooleanAttributes: true,
+          // removeCommentsFromCDATA: true,
+          // removeOptionalTags: true
+        },
+        files: [{
+          expand: true,
+          cwd: '<%= yeoman.app %>',
+          src: ['*.html'],
+          dest: '<%= yeoman.dist %>'
+        }]
+      }
+    },
+
+    // Copies remaining files to places other tasks can use
+    copy: {
+      dist: {
+        files: [{
+          expand: true,
+          dot: true,
+          cwd: '<%= yeoman.app %>',
+          dest: '<%= yeoman.dist %>',
+          src: [
+            '*.{ico,png,txt}',
+            '{,**/}*.json',
+            'styles/fonts/{,*/}*.*'
+          ]
+        }, {
+          expand: true,
+          cwd: '<%= yeoman.app %>/images',
+          dest: '<%= yeoman.dist %>/images',
+          src: '*'
+        }, {
+          expand: true,
+          cwd: '.',
+          src: 'node_modules/bootstrap-sass/assets/fonts/bootstrap/*',
+          dest: '<%= yeoman.dist %>'
+        }]
+      }
+    },
+
+    // uglify js files
+    ///////////////////////////////////////
+    uglify: {
+      options: {
+        mangle: false,
+        compress: true,
+        beautify: false
+      },
+      dist: {
+        files: [
+          {
+            expand: true,
+            cwd: '<%= yeoman.dist %>',
+            src: '{,**/}*.js',
+            dest: '<%= yeoman.dist %>'
+          }
+        ]
+      }
+    },
+
+    // Renames files for browser caching purposes
+    filerev: {
+      dist: {
+        src: [
+          '<%= yeoman.dist %>/scripts/{,**/}*.js',
+          '<%= yeoman.dist %>/styles/{,**/}*.css',
+          '<%= yeoman.dist %>/images/{,**/}*.{png,jpg,jpeg,gif,webp,svg}',
+          '<%= yeoman.dist %>/styles/fonts/*'
+        ]
+      }
     }
 
   });
 
   grunt.registerTask('serve', 'Compile then start a web server', function (target) {
 
+    if(target === 'dist'){
+      return grunt.task.run([
+        'build',
+        'connect:dist:keepalive'
+      ]);
+    }
+
     grunt.task.run([
       'clean:dev',
-      'sass',
+      'sass:dev',
       'browserify:dev',
       'connect:dev',
       'watch'
+    ]);
+  });
+
+  grunt.registerTask('build', 'build assets', function (target) {
+    grunt.task.run([
+      'clean',
+      'sass:dev',
+      'browserify:dev',
+      'useminPrepare',  // read html build blocks and prepare to concatenate and move css,js to dist
+      'concat',         // concatinates files and moves them to dist
+      'cssmin',         // minify css in dist
+      'htmlmin',        // minify and copy html files to dist
+      'copy:dist',      // move unhanled files to dist
+      'uglify',         // minifies & uglifies js files in dist
+      'filerev',        // hashes js/css/img/font files in dist
+      'usemin'
     ]);
   });
 
