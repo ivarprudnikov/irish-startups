@@ -185,7 +185,7 @@ module.exports = function (grunt) {
           src: [ 'prod.js' ],
           dest: '<%= yeoman.app %>/scripts',
           rename: function(dest, src){
-            return dest + appConfig.configFile
+            return dest + '/' + appConfig.configFile
           }
         }, {
           expand: true,
