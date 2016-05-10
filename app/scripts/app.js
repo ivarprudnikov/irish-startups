@@ -12,7 +12,8 @@ import { Component } from '@angular/core';
   directives: [ Header, ROUTER_DIRECTIVES ]
 })
 @Routes([
-  { path: '/main', component: Main, name: 'Main' }
+  { path: '/main', component: Main },
+  { path: '*', component: Main }
 ])
 export class App {
 

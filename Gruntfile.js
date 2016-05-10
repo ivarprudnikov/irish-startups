@@ -11,6 +11,7 @@ module.exports = function (grunt) {
   var appConfig = {
     app: 'app',
     dist: 'dist',
+    configFile: 'generatedConfig.js',
     jsBundle: 'generated.js',
     cssBundle: 'generated.css'
   };
@@ -70,6 +71,7 @@ module.exports = function (grunt) {
     clean: {
       dev: [
         '.tmp',
+        '<%= yeoman.app %>/scripts/<%= yeoman.configFile %>',
         '<%= yeoman.app %>/scripts/<%= yeoman.jsBundle %>',
         '<%= yeoman.app %>/styles/<%= yeoman.cssBundle %>*'
       ],
@@ -154,13 +156,6 @@ module.exports = function (grunt) {
 
     htmlmin: {
       dist: {
-        options: {
-          // collapseWhitespace: true,
-          // conservativeCollapse: true,
-          // collapseBooleanAttributes: true,
-          // removeCommentsFromCDATA: true,
-          // removeOptionalTags: true
-        },
         files: [{
           expand: true,
           cwd: '<%= yeoman.app %>',
@@ -172,8 +167,27 @@ module.exports = function (grunt) {
 
     // Copies remaining files to places other tasks can use
     copy: {
+      dev: {
+        files: [{
+          expand: true,
+          cwd: '<%= yeoman.app %>/environments',
+          src: [ 'dev.js' ],
+          dest: '<%= yeoman.app %>/scripts',
+          rename: function(dest, src){
+            return dest + '/' + appConfig.configFile
+          }
+        }]
+      },
       dist: {
         files: [{
+          expand: true,
+          cwd: '<%= yeoman.app %>/environments',
+          src: [ 'prod.js' ],
+          dest: '<%= yeoman.app %>/scripts',
+          rename: function(dest, src){
+            return dest + appConfig.configFile
+          }
+        }, {
           expand: true,
           dot: true,
           cwd: '<%= yeoman.app %>',
@@ -242,6 +256,7 @@ module.exports = function (grunt) {
 
     grunt.task.run([
       'clean:dev',
+      'copy:dev',
       'sass:dev',
       'browserify:dev',
       'connect:dev',
@@ -252,13 +267,13 @@ module.exports = function (grunt) {
   grunt.registerTask('build', 'build assets', function (target) {
     grunt.task.run([
       'clean',
+      'copy:dist',
       'sass:dev',
       'browserify:dev',
       'useminPrepare',  // read html build blocks and prepare to concatenate and move css,js to dist
       'concat',         // concatinates files and moves them to dist
       'cssmin',         // minify css in dist
       'htmlmin',        // minify and copy html files to dist
-      'copy:dist',      // move unhanled files to dist
       'uglify',         // minifies & uglifies js files in dist
       'filerev',        // hashes js/css/img/font files in dist
       'usemin'

@@ -3,11 +3,11 @@ import { bootstrap } from '@angular/platform-browser-dynamic';
 import { ROUTER_PROVIDERS } from '@angular/router';
 import { HTTP_PROVIDERS } from '@angular/http'
 import { APP_BASE_HREF, LocationStrategy, HashLocationStrategy } from '@angular/common';
-import { provide } from '@angular/core';
+import { provide, enableProdMode } from '@angular/core';
+import { CONFIG } from './generatedConfig'
 
-let basePath = '#!/'
-if(document.location.href.match(/github\.io/) != null){
-  basePath = document.location.pathname.replace(/^\//, '') + '#!/'
+if(CONFIG.environment === 'prod'){
+  enableProdMode()
 }
 
 bootstrap(App, [
