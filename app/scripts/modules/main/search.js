@@ -19,7 +19,7 @@ export class Search {
     // TODO: use query to filter
     let query = new Query(params)
 
-    return this.http.get('/startupireland/converted.json')
+    return this.http.get( document.location.pathname + 'startupireland/converted.json')
       .map(this.extractData)
       .catch(this.handleError);
   }

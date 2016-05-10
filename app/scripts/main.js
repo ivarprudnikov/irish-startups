@@ -12,6 +12,6 @@ if(document.location.href.match(/github\.io/) != null){
 
 bootstrap(App, [
   ROUTER_PROVIDERS,
-  provide(APP_BASE_HREF, {useValue: basePath}),
+  provide(APP_BASE_HREF, {useValue: '#!/'}),
   HTTP_PROVIDERS
 ]).catch(err => console.error(err));
