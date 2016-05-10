@@ -13,7 +13,3 @@
 - [ ] link company info to external resources (twitter, facebook, instagram, etc) - preferably in a background task
 
 
-
-
-
-
