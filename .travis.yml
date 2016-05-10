@@ -1,0 +1,24 @@
+language: node_js
+
+env:
+  global:
+    - secure: "pnF1IEBJvnA/GMBQ07SvpSo0KKYQWFiVQjFCkhNjlI1NRmrb2LNQ3+jNqMhvY6liDEBn6u0HAxon0E0qhJW+gIzHQu3kMvqH6IeQOuhj/JuLlHLuTu1C/B052lNoEKNOI+HvakluaiDhhAHyOn9eDENsTGJap4vQglx80OZM7AJ34LzDL5IpHGAwMZ3GDTIATw+bQB6DgOQM9ESNR8xfa+LO90PG3GH/4YkyQsBonQvblp764RdGAeM4l9wsUoUOyNzrd52L4bzoTmsDae8mAyan6NyFO86TOqYmowACviKLbuzXvDohn7Tozny4Lo2on58ninq554MZg54sy/FpOn9q5X5Sb1baIzsTdFJPrH3Rav1IPJwEe5COOf1syo9s2R/9DlURMGz9+kVL7jSCCp8DRuS/zlUFEZjV5CjkvjlwuTMqQVdfXyEiEspsled3DUq7WDVemqrkbzj33r0Rg6PPXm7mgbEuG3SKCqO/Fah5IK72GhJKc31Az1l1ltPs3lFrAScOH+RVxRmpYeBIZzsXu1jkWYSgt71VUtquLmBJKBzh9vlHlFDOhgBzAlmZnS5qHM0aW5Hhdw9SEQQdLrR8g7H9Olt/foyehE0NcJ9Pn6ovC8+xG5Goq8kLTC8xiYcV8maOkCGHaS95D3dGkn1HpYgEc3L6L38l7JEUgQk="
+
+before_install:
+- gem update --system
+- gem install sass
+- npm install -g grunt-cli
+
+install:
+- 'npm install'
+
+script:
+- 'grunt build'
+
+after_success:
+- export GIT_DEPLOY_DIR=dist
+- export GIT_DEPLOY_BRANCH=gh-pages
+- export GIT_DEPLOY_REPO=https://$GITHUB_TOKEN@github.com/ivarprudnikov/irish-startups.git
+- source ./deploy_to_github.sh
+- echo "Done deploy.sh"
+
