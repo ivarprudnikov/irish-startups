@@ -1,5 +1,9 @@
 # Display startup companies in Ireland
 
+[![Build Status](https://travis-ci.org/ivarprudnikov/irish-startups.svg?branch=master)](https://travis-ci.org/ivarprudnikov/irish-startups)
+
+**[PREVIEW LATEST BUILD](http://ivarprudnikov.github.io/irish-startups)**
+
 - [x] pull initial data from http://startupireland.ie
 - [ ] display data in a list/grid
 - [ ] expose live demo via Github pages
