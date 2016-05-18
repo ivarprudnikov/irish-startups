@@ -4,10 +4,10 @@ import { Component } from '@angular/core';
   selector: 'startup',
   inputs: ['type', 'details'],
   template: `
-    <section>
-      <p>{{details.value.name}}</p>
-      <p>{{details.value.description}}</p>
-      <p>Category: {{details.value.category}}</p>
+    <section class="startup-item">
+      <p class="title">{{details.value.name}}</p>
+      <p class="description" *ngIf="details.value.description">{{details.value.description}}</p>
+      <p class="category">{{details.value.category}}</p>
     </section>
   `
 })

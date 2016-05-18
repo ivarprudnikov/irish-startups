@@ -10,11 +10,11 @@ import { StartupDirective } from './startup'
   selector: 'main-section',
   directives: [ MdButton, MD_SIDENAV_DIRECTIVES, StartupDirective ],
   template: `
-    <section class="container">
+    <section class="container search-results">
       <p *ngIf="loading">Loading ...</p>
       <p *ngIf="errorMessage">{{errorMessage}}</p>
-      <ul>
-        <li *ngFor="let item of items | mapToIterable">
+      <ul class="list">
+        <li *ngFor="let item of items | mapToIterable" class="list-item">
           <startup [details]="item"></startup>
         </li>
       </ul>
