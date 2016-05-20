@@ -2,6 +2,8 @@ import { Http } from '@angular/http'
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/add/operator/map';
 import { catch } from 'rxjs/add/operator/catch';
+import { share } from 'rxjs/add/operator/share';
+import { Observable } from 'rxjs/Observable'
 
 @Injectable()
 export class Search {
@@ -14,23 +16,47 @@ export class Search {
     this.http = http
   }
 
-  list(params){
-
-    // TODO: use query to filter
-    let query = new Query(params)
-
-    return this.http.get( document.location.pathname + 'startupireland/converted.json')
-      .map(this.extractData)
-      .catch(this.handleError);
+  asObservable(data){
+    return new Observable(obs =>  obs.next(data))
   }
 
-  extractData(res) {
+  fetchData(){
+
+    if(this.cachedResponse){
+      return this.asObservable(this.cachedResponse)
+    }
+
+    return new Observable(obs => {
+      this.http.get( document.location.pathname + 'startupireland/converted.json')
+        .map(this.parseResponse)
+        .catch(this.handleError)
+        .subscribe(data => {
+          this.cachedResponse = data;
+          obs.next(this.cachedResponse)
+        })
+    })
+  }
+
+  parseResponse(res) {
     if (res.status < 200 || res.status >= 300) {
       throw new Error('Bad response status: ' + res.status);
     }
-    let body = res.json();
+    let body = res.json() || {};
+    this.cachedResponse = body;
+    return body
+  }
 
-    return body || { };
+  list(params){
+    let query = new Query(params)
+    return this.fetchData()
+      .map(res => this.extractData(res,query))
+      .catch(this.handleError);
+  }
+
+  extractData(body, query) {
+    let allKeys = Object.keys(body);
+    let filteredItems = allKeys.slice(query.offset, query.max).map(k => body[k]);
+    return new Results(filteredItems, allKeys.length)
   }
 
   handleError(error) {
@@ -40,6 +66,13 @@ export class Search {
     return Observable.throw(errMsg);
   }
 
+}
+
+class Results {
+  constructor(items, total){
+    this.items = items
+    this.total = total
+  }
 }
 
 class Query {

@@ -11,8 +11,10 @@ import { StartupDirective } from './startup'
   directives: [ MdButton, MD_SIDENAV_DIRECTIVES, StartupDirective ],
   template: `
     <section class="container search-results">
+      <button md-raised-button="" (click)="list()">Reload results</button>
       <p *ngIf="loading">Loading ...</p>
       <p *ngIf="errorMessage">{{errorMessage}}</p>
+      <p *ngIf="total">{{total}} results</p>
       <ul class="list">
         <li *ngFor="let item of items | mapToIterable" class="list-item">
           <startup [details]="item"></startup>
@@ -38,8 +40,10 @@ export class Main {
     this.loading = isLoading
   }
 
-  setItems(items){
-    this.items = items
+  setItems(results){
+    results = results || {};
+    this.items = results.items || [];
+    this.total = results.total || this.items.length
     this.setLoader(false)
   }
 
@@ -49,11 +53,17 @@ export class Main {
   }
 
   list(){
+
+    this.setItems({})
     this.setLoader(true)
-    this.searchService.list()
-      .subscribe(
-        items => this.setItems(items),
-        error => this.setError(error)
-      )
+
+    setTimeout(() => {
+      this.searchService.list()
+        .subscribe(
+          results => this.setItems(results),
+          error => this.setError(error)
+        )
+    }, 1000)
   }
+
 }
