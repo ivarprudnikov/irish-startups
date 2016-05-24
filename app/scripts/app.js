@@ -26,6 +26,7 @@ export class App {
   }
 
   ngOnInit() {
+    // TODO make sure params are not removed
     this.router.navigate(['/main']);
   }
 

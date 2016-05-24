@@ -1,14 +1,15 @@
-import { Routes } from '@angular/router';
+import { Routes, Router, RouteSegment } from '@angular/router';
 import { Component } from '@angular/core';
 import { MdButton } from '@angular2-material/button';
 import { MD_SIDENAV_DIRECTIVES } from '@angular2-material/sidenav';
 import { Search } from './search'
 import { MapToIterablePipe } from '../util/mapToIterable'
 import { StartupDirective } from './startup'
+import { PaginationDirective } from './pagination'
 
 @Component({
   selector: 'main-section',
-  directives: [ MdButton, MD_SIDENAV_DIRECTIVES, StartupDirective ],
+  directives: [ MdButton, MD_SIDENAV_DIRECTIVES, StartupDirective, PaginationDirective ],
   template: `
     <section class="container search-results">
       <button md-raised-button="" (click)="list()">Reload results</button>
@@ -20,6 +21,9 @@ import { StartupDirective } from './startup'
           <startup [details]="item"></startup>
         </li>
       </ul>
+
+      <pagination [total]="total" [max]="max" [offset]="offset" (onParamsChange)="paginate($event)"></pagination>
+
     </section>
   `,
   providers: [ Search ],
@@ -28,11 +32,17 @@ import { StartupDirective } from './startup'
 export class Main {
 
   static get parameters(){
-    return [Search]
+    return [Search, Router, RouteSegment]
   }
 
-  constructor(searchService){
+  constructor(searchService, router, routeSegment){
     this.searchService = searchService
+    this.router = router
+    this.routeSegment = routeSegment
+
+    console.debug('routeSegment.parameters', routeSegment.parameters)
+
+    // TODO pass params
     this.list()
   }
 
@@ -42,6 +52,7 @@ export class Main {
 
   setItems(results){
     results = results || {};
+    console.debug('results', results);
     this.items = results.items || [];
     this.total = results.total || this.items.length
     this.setLoader(false)
@@ -52,18 +63,24 @@ export class Main {
     this.setLoader(false)
   }
 
-  list(){
+  list(params){
 
     this.setItems({})
     this.setLoader(true)
 
     setTimeout(() => {
-      this.searchService.list()
+      this.searchService.list(params)
         .subscribe(
           results => this.setItems(results),
           error => this.setError(error)
         )
     }, 1000)
+  }
+
+  paginate(params){
+    console.debug('params', params)
+    this.list(params)
+    // TODO this.router.navigate(['/main', params]);
   }
 
 }

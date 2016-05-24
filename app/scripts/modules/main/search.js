@@ -55,7 +55,7 @@ export class Search {
 
   extractData(body, query) {
     let allKeys = Object.keys(body);
-    let filteredItems = allKeys.slice(query.offset, query.max).map(k => body[k]);
+    let filteredItems = allKeys.slice(query.offset, query.offset + query.max).map(k => body[k]);
     return new Results(filteredItems, allKeys.length)
   }
 
