@@ -12,7 +12,6 @@ import { PaginationDirective } from './pagination'
   directives: [ MdButton, MD_SIDENAV_DIRECTIVES, StartupDirective, PaginationDirective ],
   template: `
     <section class="container search-results">
-      <button md-raised-button="" (click)="list()">Reload results</button>
       <p *ngIf="loading">Loading ...</p>
       <p *ngIf="errorMessage">{{errorMessage}}</p>
       <p *ngIf="total">{{total}} results</p>
@@ -21,9 +20,7 @@ import { PaginationDirective } from './pagination'
           <startup [details]="item"></startup>
         </li>
       </ul>
-
       <pagination [total]="total" [max]="max" [offset]="offset" (onParamsChange)="paginate($event)"></pagination>
-
     </section>
   `,
   providers: [ Search ],
@@ -74,7 +71,7 @@ export class Main {
           results => this.setItems(results),
           error => this.setError(error)
         )
-    }, 1000)
+    }, 200)
   }
 
   paginate(params){
