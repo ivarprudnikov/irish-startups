@@ -1,4 +1,5 @@
 import { Routes, Router, RouteSegment } from '@angular/router';
+import { FORM_DIRECTIVES } from '@angular/common';
 import { Component } from '@angular/core';
 import { MdButton } from '@angular2-material/button';
 import { MD_SIDENAV_DIRECTIVES } from '@angular2-material/sidenav';
@@ -9,18 +10,30 @@ import { PaginationDirective } from './pagination'
 
 @Component({
   selector: 'main-section',
-  directives: [ MdButton, MD_SIDENAV_DIRECTIVES, StartupDirective, PaginationDirective ],
+  directives: [ MdButton, StartupDirective, PaginationDirective, FORM_DIRECTIVES ],
   template: `
     <section class="container search-results">
-      <p *ngIf="loading">Loading ...</p>
-      <p *ngIf="errorMessage">{{errorMessage}}</p>
-      <p *ngIf="total">{{total}} results</p>
-      <ul class="list">
-        <li *ngFor="let item of items | mapToIterable" class="list-item">
-          <startup [details]="item"></startup>
-        </li>
-      </ul>
-      <pagination [total]="total" [max]="max" [offset]="offset" (onParamsChange)="paginate($event)"></pagination>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <form #f="ngForm" (ngSubmit)="onFormSubmit(f.value)">
+            <label>Query</label>
+            <input type="search" name="query" ngControl="query">
+            <button type="submit" md-button="">Search</button>
+          </form>
+        </div>
+        <div class="col-sm-8">
+          <p *ngIf="loading">Loading ...</p>
+          <p *ngIf="errorMessage">{{errorMessage}}</p>
+          <p *ngIf="total">{{total}} results</p>
+          <ul class="list">
+            <li *ngFor="let item of items | mapToIterable" class="list-item">
+              <startup [details]="item"></startup>
+            </li>
+          </ul>
+          <pagination [total]="total" [max]="max" [offset]="offset" (onParamsChange)="paginate($event)"></pagination>
+        </div>
+      </div>
     </section>
   `,
   providers: [ Search ],
@@ -72,6 +85,12 @@ export class Main {
           error => this.setError(error)
         )
     }, 200)
+  }
+
+  onFormSubmit(data){
+    console.debug('form data', data);
+    data.offset = 0;
+    this.list(data)
   }
 
   paginate(params){

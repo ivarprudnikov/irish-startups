@@ -55,6 +55,20 @@ export class Search {
 
   extractData(body, query) {
     let allKeys = Object.keys(body);
+
+    if(query.query){
+      let queryMatcher = new RegExp(query.query, "gi");
+      allKeys = allKeys.filter(k => {
+        let titleMatches = (function(){
+          return body[k].title && body[k].title.match(queryMatcher)
+        }())
+        let descriptionMatches = (function(){
+          return body[k].description && body[k].description.match(queryMatcher)
+        }())
+        return titleMatches || descriptionMatches
+      })
+    }
+
     let filteredItems = allKeys.slice(query.offset, query.offset + query.max).map(k => body[k]);
     return new Results(filteredItems, allKeys.length)
   }
@@ -81,6 +95,11 @@ class Query {
     if(!params){
       params = {}
     }
+
+    if('string' === typeof params.query){
+      this.query = params.query.trim()
+    }
+
     this.max = Math.min( Query.asInt(params.max, 10), 100 )
     this.offset = Query.asInt(params.offset, 0)
   }
