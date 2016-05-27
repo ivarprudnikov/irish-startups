@@ -31,7 +31,7 @@ import { PaginationDirective } from './pagination'
               <startup [details]="item"></startup>
             </li>
           </ul>
-          <pagination [total]="total" [max]="max" [offset]="offset" (onParamsChange)="paginate($event)"></pagination>
+          <pagination [total]="total" [max]="params.max" [offset]="params.offset" (onParamsChange)="paginate($event)"></pagination>
         </div>
       </div>
     </section>
@@ -49,11 +49,11 @@ export class Main {
     this.searchService = searchService
     this.router = router
     this.routeSegment = routeSegment
+    this.params = {}
 
-    console.debug('routeSegment.parameters', routeSegment.parameters)
+    //console.debug('routeSegment.parameters', routeSegment.parameters)
 
-    // TODO pass params
-    this.list()
+    this.list(this.params)
   }
 
   setLoader(isLoading){
@@ -62,7 +62,6 @@ export class Main {
 
   setItems(results){
     results = results || {};
-    console.debug('results', results);
     this.items = results.items || [];
     this.total = results.total || this.items.length
     this.setLoader(false)
@@ -74,6 +73,8 @@ export class Main {
   }
 
   list(params){
+
+    console.debug('search params', params)
 
     this.setItems({})
     this.setLoader(true)
@@ -88,14 +89,15 @@ export class Main {
   }
 
   onFormSubmit(data){
-    console.debug('form data', data);
-    data.offset = 0;
-    this.list(data)
+    Object.keys(data).forEach(k => this.params[k] = data[k])
+    this.params.offset = 0
+    this.list(this.params)
   }
 
   paginate(params){
-    console.debug('params', params)
-    this.list(params)
+    this.params.max = params.max
+    this.params.offset = params.offset
+    this.list(this.params)
     // TODO this.router.navigate(['/main', params]);
   }
 

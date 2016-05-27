@@ -10,9 +10,11 @@ import { MdButton } from '@angular2-material/button';
   outputs: [ 'onParamsChange' ],
   template: `
     <nav class="pagination">
-      <button md-button [disabled]="!(offset > 0)" (click)="onPrev($event)">Prev</button>
-      <button md-button disabled>{{currentPage}}</button>
-      <button md-button [disabled]="!(total > (max + offset))" (click)="onNext($event)">Next</button>
+      <button md-button [disabled]="!(_offset > 0)" (click)="onFirst($event)">First</button>
+      <button md-button [disabled]="!(_offset > 0)" (click)="onPrev($event)">Prev</button>
+      <button md-button disabled>Offset ({{_offset}}) Page({{currentPage}}) Pages({{pages.length}})</button>
+      <button md-button [disabled]="!(_total > (_max + _offset))" (click)="onNext($event)">Next</button>
+      <button md-button [disabled]="!(_total > (_max + _offset))" (click)="onLast($event)">Last</button>
     </nav>
   `
 })
@@ -20,15 +22,32 @@ export class PaginationDirective {
 
   constructor() {
     this.onParamsChange = new EventEmitter(false);
-    this.max = 0
-    this.offset = 0
-    this.total = 0
+    this._max = 0
+    this._offset = 0
+    this._total = 0
     this.currentPage = 1;
     this.pages = [];
   }
 
+  set offset(val){
+    this._offset = val
+    this.formatInputs()
+    this.calculatePages()
+  }
+
+  set max(val){
+    this._max = val
+    this.formatInputs()
+    this.calculatePages()
+  }
+
+  set total(val){
+    this._total = val
+    this.formatInputs()
+    this.calculatePages()
+  }
+
   ngOnInit() {
-    console.debug('max', this.max, 'offset', this.offset, 'total', this.total)
     this.formatInputs()
     this.calculatePages()
   }
@@ -41,27 +60,30 @@ export class PaginationDirective {
   }
 
   formatInputs(){
-    let offset = this.castToNumber(this.offset);
-    this.offset = offset > 0 ? offset : 0;
-    let max = this.castToNumber(this.max);
-    this.max = max > 0 ? max : 10;
-    let total = this.castToNumber(this.total);
-    this.total = total > 0 ? total : 0;
+    let offset = this.castToNumber(this._offset);
+    this._offset = offset > 0 ? offset : 0;
+    let max = this.castToNumber(this._max);
+    this._max = max > 0 ? max : 10;
+    let total = this.castToNumber(this._total);
+    this._total = total > 0 ? total : 0;
   }
 
   calculatePages(){
     this.pages = [];
 
-    if(this.total > 0){
-      let numberOfPages = Math.floor( this.total / this.max ) + 1;
+    if(this._total > 0){
+      let numberOfPages = Math.floor( this._total / this._max );
+      if(this._total % this._max > 0){
+        numberOfPages += 1
+      }
       do {
         let page = {
           number: numberOfPages,
-          starts: (numberOfPages - 1) * this.max,
-          ends: numberOfPages * this.max
+          starts: (numberOfPages - 1) * this._max,
+          ends: numberOfPages * this._max
         }
         this.pages.push(page)
-        if(this.offset >= page.starts && this.offset < page.ends){
+        if(this._offset >= page.starts && this._offset < page.ends){
           this.currentPage = page.number
         }
         --numberOfPages;
@@ -70,24 +92,40 @@ export class PaginationDirective {
     }
   }
 
-  onPrev(){
-    this.formatInputs()
-    let offset = this.offset - this.max
-    this.offset = offset > 0 ? offset : 0;
-    this.calculatePages();
+  emitParams(){
     this.onParamsChange.emit({
-      max: this.max,
-      offset: this.offset
+      max: this._max,
+      offset: this._offset
     });
   }
 
-  onNext(){
-    this.formatInputs()
-    this.offset += this.max
+  onFirst(){
+    this._offset = 0
+    this.calculatePages()
+    this.emitParams()
+  }
+
+  onPrev(){
+    let offset = this._offset - this._max
+    this._offset = offset > 0 ? offset : 0;
     this.calculatePages();
-    this.onParamsChange.emit({
-      max: this.max,
-      offset: this.offset
-    });
+    this.emitParams()
+  }
+
+  onNext(){
+    this._offset += this._max
+    this.calculatePages();
+    this.emitParams()
+  }
+
+  onLast(){
+    let lastPageItems = this._total % this._max
+    if(lastPageItems > 0){
+      this._offset = this._total - lastPageItems
+    } else {
+      this._offset = this._total - this._max
+    }
+    this.calculatePages()
+    this.emitParams()
   }
 }
