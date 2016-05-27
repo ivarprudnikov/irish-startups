@@ -55,6 +55,7 @@ export class Search {
 
   extractData(body, query) {
     let allKeys = Object.keys(body);
+    let searchResultCategories = {}
 
     if(query.query){
       let queryMatcher = new RegExp(query.query, "gi");
@@ -69,8 +70,20 @@ export class Search {
       })
     }
 
+    allKeys.forEach(k => {
+      let cat = body[k].category
+      if(cat){
+        let cachedCat = searchResultCategories[cat]
+        if(cachedCat){
+          searchResultCategories[cat] += 1
+        } else {
+          searchResultCategories[cat] = 1
+        }
+      }
+    })
+
     let filteredItems = allKeys.slice(query.offset, query.offset + query.max).map(k => body[k]);
-    return new Results(filteredItems, allKeys.length)
+    return new Results(filteredItems, allKeys.length, searchResultCategories)
   }
 
   handleError(error) {
@@ -83,9 +96,10 @@ export class Search {
 }
 
 class Results {
-  constructor(items, total){
+  constructor(items, total, categories){
     this.items = items
     this.total = total
+    this.categories = categories
   }
 }
 

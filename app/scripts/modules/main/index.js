@@ -17,9 +17,14 @@ import { PaginationDirective } from './pagination'
       <div class="row">
         <div class="col-sm-4">
           <form #f="ngForm" (ngSubmit)="onFormSubmit(f.value)">
-            <label>Query</label>
-            <input type="search" name="query" ngControl="query">
-            <button type="submit" md-button="">Search</button>
+            <fieldset>
+              <label>Query</label>
+              <input type="search" name="query" ngControl="query">
+            </fieldset>
+            <fieldset>
+              <p *ngFor="let cat of categories | mapToIterable">{{ cat.key }} ({{cat.value}})</p>
+            </fieldset>
+            <button type="submit" md-raised-button="">Search</button>
           </form>
         </div>
         <div class="col-sm-8">
@@ -64,6 +69,7 @@ export class Main {
     results = results || {};
     this.items = results.items || [];
     this.total = results.total || this.items.length
+    this.categories = results.categories || {}
     this.setLoader(false)
   }
 
