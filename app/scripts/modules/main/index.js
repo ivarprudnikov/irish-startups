@@ -4,7 +4,8 @@ import { Component } from '@angular/core';
 import { MdButton } from '@angular2-material/button';
 import { MdCheckbox } from '@angular2-material/checkbox';
 import { MD_INPUT_DIRECTIVES } from '@angular2-material/input';
-import { MD_SIDENAV_DIRECTIVES } from '@angular2-material/sidenav';
+import { MD_LIST_DIRECTIVES } from '@angular2-material/list';
+import { MdProgressBar } from '@angular2-material/progress-bar';
 import { Search } from './search'
 import { MapToIterablePipe } from '../util/mapToIterable'
 import { StartupDirective } from './startup'
@@ -12,12 +13,12 @@ import { PaginationDirective } from './pagination'
 
 @Component({
   selector: 'main-section',
-  directives: [ MdButton, MdCheckbox, MD_INPUT_DIRECTIVES, StartupDirective, PaginationDirective, FORM_DIRECTIVES ],
+  directives: [ MdButton, MdCheckbox, MdProgressBar, MD_INPUT_DIRECTIVES, MD_LIST_DIRECTIVES, StartupDirective, PaginationDirective, FORM_DIRECTIVES ],
   template: `
     <section class="container search-results">
 
       <div class="row">
-        <div class="col-sm-4">
+        <div class="col-sm-3">
           <form #f="ngForm" (ngSubmit)="onFormSubmit(f.value)">
             <p>
               <md-input placeholder="Search query ..." ngControl="query"></md-input>
@@ -34,18 +35,30 @@ import { PaginationDirective } from './pagination'
 
               <a *ngIf="!showMore" (click)="showMore=true">More categories ...</a>
             </fieldset>
-            <button type="submit" md-raised-button="">Search</button>
+
+            <br>
+
+            <button type="submit" md-raised-button="" color="primary">Search</button>
           </form>
         </div>
-        <div class="col-sm-8">
-          <p *ngIf="loading">Loading ...</p>
-          <p *ngIf="errorMessage">{{errorMessage}}</p>
-          <p *ngIf="total">{{total}} results</p>
-          <ul class="list">
-            <li *ngFor="let item of items | mapToIterable" class="list-item">
-              <startup [details]="item"></startup>
-            </li>
-          </ul>
+
+
+        <div class="col-sm-9">
+
+          <md-list>
+
+            <md-progress-bar *ngIf="loading" mode="indeterminate"></md-progress-bar>
+
+            <h3 *ngIf="errorMessage" md-subheader>{{errorMessage}}</h3>
+            <h3 *ngIf="total" md-subheader>Found {{total}} results</h3>
+
+            <md-list-item *ngFor="let item of items | mapToIterable" class="startup-item">
+              <h3 md-line class="title"> {{item.value.name}} </h3>
+              <p md-line class="description" *ngIf="item.value.description"> {{item.value.description}} </p>
+              <p md-line class="category"> {{item.value.category}} </p>
+            </md-list-item>
+          </md-list>
+
           <pagination [total]="total" [max]="params.max" [offset]="params.offset" (onParamsChange)="paginate($event)"></pagination>
         </div>
       </div>
@@ -101,7 +114,7 @@ export class Main {
           results => this.setItems(results),
           error => this.setError(error)
         )
-    }, 200)
+    }, 1000)
   }
 
   onFormSubmit(data){
