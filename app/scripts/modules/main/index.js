@@ -1,47 +1,24 @@
 import { Routes, Router, RouteSegment } from '@angular/router';
-import { FORM_DIRECTIVES } from '@angular/common';
 import { Component } from '@angular/core';
 import { MdButton } from '@angular2-material/button';
-import { MdCheckbox } from '@angular2-material/checkbox';
-import { MD_INPUT_DIRECTIVES } from '@angular2-material/input';
 import { MD_LIST_DIRECTIVES } from '@angular2-material/list';
 import { MdProgressBar } from '@angular2-material/progress-bar';
 import { Search } from './search'
 import { MapToIterablePipe } from '../util/mapToIterable'
-import { StartupDirective } from './startup'
+import { SearchCommandDirective } from './searchCommand'
+import { SearchCategory } from './searchCategory'
 import { PaginationDirective } from './pagination'
 
 @Component({
   selector: 'main-section',
-  directives: [ MdButton, MdCheckbox, MdProgressBar, MD_INPUT_DIRECTIVES, MD_LIST_DIRECTIVES, StartupDirective, PaginationDirective, FORM_DIRECTIVES ],
+  directives: [ MdButton, MdProgressBar, MD_LIST_DIRECTIVES, PaginationDirective, SearchCommandDirective ],
   template: `
     <section class="container search-results">
 
       <div class="row">
         <div class="col-sm-3">
-          <form #f="ngForm" (ngSubmit)="onFormSubmit(f.value)">
-            <p>
-              <md-input placeholder="Search query ..." ngControl="query"></md-input>
-            </p>
-            <fieldset>
-
-              <template ngFor let-cat [ngForOf]="categories | mapToIterable" let-i="index">
-                <p *ngIf="i < 5 || showMore">
-                  <md-checkbox ngControl="category:{{ cat.key }}">
-                    {{ cat.key }} ({{cat.value}})
-                  </md-checkbox>
-                </p>
-              </template>
-
-              <a *ngIf="!showMore" (click)="showMore=true">More categories ...</a>
-            </fieldset>
-
-            <br>
-
-            <button type="submit" md-raised-button="" color="primary">Search</button>
-          </form>
+          <search-command [categories]="categories" (onParamsChange)="onFormSubmit($event)"></search-command>
         </div>
-
 
         <div class="col-sm-9">
 
@@ -92,7 +69,7 @@ export class Main {
     results = results || {};
     this.items = results.items || [];
     this.total = results.total || this.items.length
-    this.categories = results.categories || {}
+    this.categories = results.categories || []
     this.setLoader(false)
   }
 

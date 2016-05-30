@@ -4,6 +4,7 @@ import { map } from 'rxjs/add/operator/map';
 import { catch } from 'rxjs/add/operator/catch';
 import { share } from 'rxjs/add/operator/share';
 import { Observable } from 'rxjs/Observable'
+import { SearchCategory } from './searchCategory'
 
 @Injectable()
 export class Search {
@@ -105,7 +106,10 @@ class Results {
   constructor(items, total, categories){
     this.items = items
     this.total = total
-    this.categories = categories || [];
+
+    let resultCategories = categories || {}
+    this.categories = Object.keys(resultCategories)
+      .map(k => new SearchCategory(k, resultCategories[k]));
   }
 }
 
