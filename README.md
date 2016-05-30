@@ -5,8 +5,8 @@
 **[PREVIEW LATEST BUILD](http://ivarprudnikov.github.io/irish-startups)**
 
 - [x] pull initial data from http://startupireland.ie
-- [ ] display data in a list/grid
-- [ ] expose live demo via Github pages
+- [x] display data in a list
+- [x] expose live demo via Github pages
 - [ ] display data on a map
 - [ ] store data in Firebase
 - [ ] enable filtering (elasticsearch most likely)
