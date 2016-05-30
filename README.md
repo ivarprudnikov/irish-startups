@@ -9,7 +9,7 @@
 - [x] expose live demo via Github pages
 - [ ] display data on a map
 - [ ] store data in Firebase
-- [ ] enable filtering
+- [x] enable filtering
 - [ ] enable login (Firebase?)
 - [ ] periodically backup data (S3)
 - [ ] allow CRUD
