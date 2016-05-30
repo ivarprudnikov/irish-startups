@@ -2,6 +2,8 @@ import { Routes, Router, RouteSegment } from '@angular/router';
 import { FORM_DIRECTIVES } from '@angular/common';
 import { Component } from '@angular/core';
 import { MdButton } from '@angular2-material/button';
+import { MdCheckbox } from '@angular2-material/checkbox';
+import { MD_INPUT_DIRECTIVES } from '@angular2-material/input';
 import { MD_SIDENAV_DIRECTIVES } from '@angular2-material/sidenav';
 import { Search } from './search'
 import { MapToIterablePipe } from '../util/mapToIterable'
@@ -10,19 +12,27 @@ import { PaginationDirective } from './pagination'
 
 @Component({
   selector: 'main-section',
-  directives: [ MdButton, StartupDirective, PaginationDirective, FORM_DIRECTIVES ],
+  directives: [ MdButton, MdCheckbox, MD_INPUT_DIRECTIVES, StartupDirective, PaginationDirective, FORM_DIRECTIVES ],
   template: `
     <section class="container search-results">
 
       <div class="row">
         <div class="col-sm-4">
           <form #f="ngForm" (ngSubmit)="onFormSubmit(f.value)">
+            <p>
+              <md-input placeholder="Search query ..." ngControl="query"></md-input>
+            </p>
             <fieldset>
-              <label>Query</label>
-              <input type="search" name="query" ngControl="query">
-            </fieldset>
-            <fieldset>
-              <p *ngFor="let cat of categories | mapToIterable">{{ cat.key }} ({{cat.value}})</p>
+
+              <template ngFor let-cat [ngForOf]="categories | mapToIterable" let-i="index">
+                <p *ngIf="i < 5 || showMore">
+                  <md-checkbox ngControl="category:{{ cat.key }}">
+                    {{ cat.key }} ({{cat.value}})
+                  </md-checkbox>
+                </p>
+              </template>
+
+              <a *ngIf="!showMore" (click)="showMore=true">More categories ...</a>
             </fieldset>
             <button type="submit" md-raised-button="">Search</button>
           </form>

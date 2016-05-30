@@ -82,6 +82,12 @@ export class Search {
       }
     })
 
+    if(query.categories.length){
+      allKeys = allKeys.filter(k => {
+        return query.categories.indexOf(body[k].category) > -1
+      })
+    }
+
     let filteredItems = allKeys.slice(query.offset, query.offset + query.max).map(k => body[k]);
     return new Results(filteredItems, allKeys.length, searchResultCategories)
   }
@@ -99,7 +105,7 @@ class Results {
   constructor(items, total, categories){
     this.items = items
     this.total = total
-    this.categories = categories
+    this.categories = categories || [];
   }
 }
 
@@ -113,6 +119,12 @@ class Query {
     if('string' === typeof params.query){
       this.query = params.query.trim()
     }
+
+    this.categories = Object.keys(params)
+      .filter(k => k.match(/^category:/) && params[k])
+      .map(k => k.split(':')[1])
+
+    if(!this.categories) this.categories = [];
 
     this.max = Math.min( Query.asInt(params.max, 10), 100 )
     this.offset = Query.asInt(params.offset, 0)
