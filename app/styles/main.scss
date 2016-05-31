@@ -1,8 +1,9 @@
 @import "bootstrap";
 @import "search";
 
-body {
-  overflow-y: scroll;
+html, body, .body-view {
+  height: 100%;
+  position: relative;
 }
 
 label md-spinner {
@@ -10,4 +11,19 @@ label md-spinner {
   height: 20px !important;
   display: inline-block !important;
 }
+
+.navbar-main {
+  margin-bottom: 0;
+}
+
+main-section md-sidenav-layout md-sidenav {
+  max-width: 90% !important;
+  text-align: left;
+
+  .container-sidenav {
+    max-width: 640px;
+  }
+}
+
+
 
