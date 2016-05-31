@@ -6,13 +6,14 @@
 
 - [x] pull initial data from http://startupireland.ie
 - [x] display data in a list
+- [x] display item details
 - [x] expose live demo via Github pages
-- [ ] display data on a map
-- [ ] store data in Firebase
 - [x] enable filtering
-- [ ] enable login (Firebase?)
-- [ ] periodically backup data (S3)
 - [ ] allow CRUD
+- [ ] enable login (Firebase?)
+- [ ] store data in Firebase
+- [ ] periodically backup data (S3)
+- [ ] display data on a map
 - [ ] pull more data from other sources
 - [ ] link company info to external resources (twitter, facebook, instagram, etc) - preferably in a background task
 
