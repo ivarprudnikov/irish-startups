@@ -16,6 +16,10 @@ label md-spinner {
   margin-bottom: 0;
 }
 
+.md-sidenav-opened {
+  height: 100%
+}
+
 main-section md-sidenav-layout md-sidenav {
   max-width: 90% !important;
   text-align: left;
