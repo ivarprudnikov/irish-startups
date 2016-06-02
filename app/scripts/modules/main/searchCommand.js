@@ -9,7 +9,7 @@ import { EventEmitter } from '@angular/common/src/facade/async'
 @Component({
   selector: 'search-command',
   directives: [ MdButton, MdCheckbox, MD_INPUT_DIRECTIVES, FORM_DIRECTIVES, MD_PROGRESS_CIRCLE_DIRECTIVES ],
-  inputs: [ 'categories' ],
+  inputs: [ 'aggregations' ],
   outputs: [ 'onParamsChange' ],
   template: `
     <form #f="ngForm" (ngSubmit)="onFormSubmit(f.value)">
@@ -18,7 +18,7 @@ import { EventEmitter } from '@angular/common/src/facade/async'
       </p>
       <fieldset>
 
-        <template ngFor let-cat [ngForOf]="_categories" let-i="index">
+        <template ngFor let-cat [ngForOf]="_aggregations" let-i="index">
           <p *ngIf="i < 5 || showMore">
             <md-checkbox ngControl="category:{{ cat.name }}" [disabled]="cat.disabled && !f.value['category:' + cat.name]">
               {{ cat.name }} <span *ngIf="!isLoading">({{ cat.count }})</span> <md-spinner *ngIf="isLoading"></md-spinner>
@@ -26,7 +26,7 @@ import { EventEmitter } from '@angular/common/src/facade/async'
           </p>
         </template>
 
-        <a href="javascript:void(0)" *ngIf="!showMore && _categories.length" (click)="showMore=true">More categories ...</a>
+        <a href="javascript:void(0)" *ngIf="!showMore && _aggregations.length" (click)="showMore=true">More aggregations ...</a>
       </fieldset>
 
       <br>
@@ -39,14 +39,14 @@ export class SearchCommandDirective {
 
   constructor(){
     this.params = {}
-    this._categories = [];
+    this._aggregations = [];
     this.onParamsChange = new EventEmitter(false);
   }
 
-  set categories(val){
+  set aggregations(val){
 
-    if(!this._categories || !this._categories.length){
-      this._categories = []
+    if(!this._aggregations || !this._aggregations.length){
+      this._aggregations = []
     }
 
     if(!val || !val.length){
@@ -57,16 +57,16 @@ export class SearchCommandDirective {
     }
 
     val.forEach(newCat => {
-      let alreadyExisting = this._categories.filter(existingCat => existingCat.name === newCat.name)[0]
+      let alreadyExisting = this._aggregations.filter(existingCat => existingCat.name === newCat.name)[0]
       if(!alreadyExisting){
-        this._categories.push(newCat)
+        this._aggregations.push(newCat)
       } else {
         alreadyExisting.count = newCat.count
         alreadyExisting.disabled = false
       }
     })
 
-    this._categories.forEach(existingCat => {
+    this._aggregations.forEach(existingCat => {
       let inNewList = val.filter(newCat => existingCat.name === newCat.name)[0]
       if(!inNewList){
         existingCat.disabled = true

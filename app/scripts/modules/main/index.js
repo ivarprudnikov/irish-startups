@@ -4,11 +4,10 @@ import { MdButton } from '@angular2-material/button';
 import { MD_LIST_DIRECTIVES } from '@angular2-material/list';
 import { MdProgressBar } from '@angular2-material/progress-bar';
 import { MD_SIDENAV_DIRECTIVES } from '@angular2-material/sidenav'
-import { Search } from './search'
-import { MapToIterablePipe } from '../util/mapToIterable'
+import { OrganisationService } from '../data/organisationService'
+import { MapToIterablePipe } from '../util/mapToIterablePipe'
 import { SearchCommandDirective } from './searchCommand'
-import { SearchCategory } from './searchCategory'
-import { PaginationDirective } from './pagination'
+import { PaginationDirective } from './../util/paginationDirective'
 
 @Component({
   selector: 'main-section',
@@ -47,7 +46,7 @@ import { PaginationDirective } from './pagination'
 
         <div class="row">
           <div class="col-sm-3">
-            <search-command [categories]="categories" (onParamsChange)="onFormSubmit($event)"></search-command>
+            <search-command [aggregations]="aggregations" (onParamsChange)="onFormSubmit($event)"></search-command>
           </div>
 
           <div class="col-sm-9">
@@ -74,17 +73,16 @@ import { PaginationDirective } from './pagination'
 
     <md-sidenav-layout>
   `,
-  providers: [ Search ],
   pipes: [ MapToIterablePipe ]
 })
 export class Main {
 
   static get parameters(){
-    return [Search, Router, RouteSegment]
+    return [OrganisationService, Router, RouteSegment]
   }
 
-  constructor(searchService, router, routeSegment){
-    this.searchService = searchService
+  constructor(organisationService, router, routeSegment){
+    this.organisationService = organisationService
     this.router = router
     this.routeSegment = routeSegment
     this.params = {}
@@ -103,7 +101,7 @@ export class Main {
     results = results || {};
     this.items = results.items || [];
     this.total = results.total || this.items.length
-    this.categories = results.categories || []
+    this.aggregations = results.aggregations || []
     this.setLoader(false)
   }
 
@@ -120,7 +118,7 @@ export class Main {
     this.setLoader(true)
 
     setTimeout(() => {
-      this.searchService.list(params)
+      this.organisationService.list(params)
         .subscribe(
           results => this.setItems(results),
           error => this.setError(error)
