@@ -1,9 +1,9 @@
-import { FORM_DIRECTIVES } from '@angular/common';
+import { FORM_DIRECTIVES, Validators, ControlGroup, Control } from '@angular/common';
+import { MD_INPUT_DIRECTIVES } from '@angular2-material/input';
 import { Component } from '@angular/core';
 import { MdButton } from '@angular2-material/button';
 import { MdCheckbox } from '@angular2-material/checkbox';
 import { MD_PROGRESS_CIRCLE_DIRECTIVES } from '@angular2-material/progress-circle';
-import { MD_INPUT_DIRECTIVES } from '@angular2-material/input';
 import { EventEmitter } from '@angular/common/src/facade/async'
 
 @Component({
@@ -12,7 +12,7 @@ import { EventEmitter } from '@angular/common/src/facade/async'
   inputs: [ 'aggregations' ],
   outputs: [ 'onParamsChange' ],
   template: `
-    <form #f="ngForm" (ngSubmit)="onFormSubmit(f.value)">
+    <form [ngFormModel]="searchForm" (ngSubmit)="onFormSubmit()">
       <p>
         <md-input placeholder="Search query ..." ngControl="query"></md-input>
       </p>
@@ -20,7 +20,7 @@ import { EventEmitter } from '@angular/common/src/facade/async'
 
         <template ngFor let-cat [ngForOf]="_aggregations" let-i="index">
           <p *ngIf="i < 5 || showMore">
-            <md-checkbox ngControl="category:{{ cat.name }}" [disabled]="cat.disabled && !f.value['category:' + cat.name]">
+            <md-checkbox ngControl="{{ cat.controlName }}" [disabled]="cat.disabled && !searchForm.value[cat.controlName]">
               {{ cat.name }} <span *ngIf="!isLoading">({{ cat.count }})</span> <md-spinner *ngIf="isLoading"></md-spinner>
             </md-checkbox>
           </p>
@@ -41,6 +41,14 @@ export class SearchCommandDirective {
     this.params = {}
     this._aggregations = [];
     this.onParamsChange = new EventEmitter(false);
+
+    this.searchForm = new ControlGroup({
+      query: new Control("")
+    })
+
+    this.searchForm.valueChanges.subscribe(val => {
+      this.emitParams(val)
+    })
   }
 
   set aggregations(val){
@@ -57,9 +65,13 @@ export class SearchCommandDirective {
     }
 
     val.forEach(newCat => {
+
+      newCat.controlName = 'category:' + newCat.name
+
       let alreadyExisting = this._aggregations.filter(existingCat => existingCat.name === newCat.name)[0]
       if(!alreadyExisting){
         this._aggregations.push(newCat)
+        this.searchForm.addControl(newCat.controlName, new Control(""))
       } else {
         alreadyExisting.count = newCat.count
         alreadyExisting.disabled = false
@@ -76,15 +88,12 @@ export class SearchCommandDirective {
 
   }
 
-  onFormSubmit(data){
-    Object.keys(data).forEach(k => this.params[k] = data[k])
-    this.emitParams()
+  onFormSubmit(){
+    this.emitParams(this.searchForm.value)
   }
 
-  emitParams(){
-
-    console.debug('emit')
-
+  emitParams(data){
+    Object.keys(data).forEach(k => this.params[k] = data[k])
     this.onParamsChange.emit(this.params);
   }
 
