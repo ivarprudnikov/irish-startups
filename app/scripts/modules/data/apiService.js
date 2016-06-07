@@ -29,25 +29,27 @@ export class ApiService {
         .map(this.parseResponse)
         .catch(this.handleError)
         .subscribe(data => {
-          this.cachedResponse = data;
-          obs.next(this.cachedResponse)
+          this.cache[CACHE_KEY] = data;
+          obs.next(data)
         })
     })
   }
 
   update(path, id, data){
+
     let CACHE_KEY = encodeURIComponent(path);
+
     this.cache[CACHE_KEY] = this.cache[CACHE_KEY] || {};
     this.cache[CACHE_KEY][id] = data;
+
+    return new Observable(obs =>  obs.next(this.cache[CACHE_KEY]))
   }
 
   parseResponse(res) {
     if (res.status < 200 || res.status >= 300) {
       throw new Error('Bad response status: ' + res.status);
     }
-    let body = res.json() || {};
-    this.cachedResponse = body;
-    return body
+    return res.json() || {};
   }
 
   handleError(error) {

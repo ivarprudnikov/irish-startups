@@ -7,39 +7,18 @@ import { MD_SIDENAV_DIRECTIVES } from '@angular2-material/sidenav'
 import { OrganisationService } from '../data/organisationService'
 import { MapToIterablePipe } from '../util/mapToIterablePipe'
 import { SearchCommandDirective } from './searchCommand'
+import { SearchResultDirective } from './searchResultDirective'
 import { PaginationDirective } from './../util/paginationDirective'
 
 @Component({
   selector: 'main-section',
-  directives: [ MdButton, MdProgressBar, MD_LIST_DIRECTIVES, MD_SIDENAV_DIRECTIVES, PaginationDirective, SearchCommandDirective ],
+  directives: [ MdButton, MdProgressBar, MD_LIST_DIRECTIVES, MD_SIDENAV_DIRECTIVES, PaginationDirective, SearchCommandDirective, SearchResultDirective ],
+  pipes: [ MapToIterablePipe ],
   template: `
     <md-sidenav-layout>
 
-      <md-sidenav #sidenav mode="over" align="end" (open)="title.focus()">
-
-        <article class="container-sidenav container-fluid">
-
-          <h2>{{ selected.name }}<a #title href="javascript:void(0)"><span class="small glyphicon glyphicon-link"></span></a></h2>
-          <p *ngIf="selected.url"><a target="_blank" href="{{ selected.url }}">{{ selected.url }}</a></p>
-          <p *ngIf="selected.categoty">Category: {{ selected.categoty }}</p>
-          <p *ngIf="selected.description">{{ selected.description }}</p>
-
-          <div *ngIf="selected.location">
-
-            <p>
-              <img class="img-responsive img-rounded"
-                   src="https://maps.googleapis.com/maps/api/staticmap?center={{selected.location.lat}},{{selected.location.lon}}&zoom=12&size=600x300&maptype=roadmap&markers=color:blue%7C{{selected.location.lat}},{{selected.location.lon}}" />
-            </p>
-            <ul class="list-group">
-              <li class="list-group-item"><a href="http://maps.apple.com/?z=12&q={{selected.location.lat}},{{selected.location.lon}}">Show in Apple maps</a></li>
-              <li class="list-group-item"><a href="https://google.com/maps/place/{{selected.location.lat}},{{selected.location.lon}}">Show in Google maps</a></li>
-              <li class="list-group-item"><a href="http://www.openstreetmap.org/?mlat={{selected.location.lat}}&mlon={{selected.location.lon}}">Show in Open Street maps</a></li>
-            </ul>
-
-          </div>
-
-        </article>
-
+      <md-sidenav #sidenav mode="over" align="end">
+        <search-result [item]="selected"></search-result>
       </md-sidenav>
 
       <section class="container search-results">
@@ -72,8 +51,7 @@ import { PaginationDirective } from './../util/paginationDirective'
       </section>
 
     <md-sidenav-layout>
-  `,
-  pipes: [ MapToIterablePipe ]
+  `
 })
 export class Main {
 

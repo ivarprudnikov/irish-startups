@@ -87,7 +87,12 @@ export class OrganisationService {
       })
     }
 
-    let filteredItems = allKeys.slice(query.offset, query.offset + query.max).map(k => body[k]);
+    let filteredItems = allKeys.slice(query.offset, query.offset + query.max).map(k => {
+      let item = body[k]
+      item._id = k
+      return item
+    });
+
     return new Results(filteredItems, allKeys.length, searchResultCategories)
   }
 
