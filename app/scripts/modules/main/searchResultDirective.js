@@ -13,7 +13,7 @@ import { OrganisationService } from '../data/organisationService'
     <article class="container-sidenav container-fluid">
 
       <header>
-        <button type="button" md-raised-button (click)="toggleEdit()">Toggle view</button>
+        <button type="button" md-raised-button (click)="toggleEdit()">{{ editing ? 'Back to preview' : 'Edit' }}</button>
       </header>
 
       <section>

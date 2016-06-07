@@ -9,7 +9,7 @@
 - [x] display item details
 - [x] expose live demo via Github pages
 - [x] enable filtering
-- [ ] allow CRUD
+- [x] allow CRUD
 - [ ] enable login (Firebase?)
 - [ ] store data in Firebase
 - [ ] periodically backup data (S3)
