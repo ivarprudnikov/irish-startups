@@ -13,7 +13,7 @@ export class OrganisationService {
 
   constructor(api){
     this.api = api
-    this.jsonPath = document.location.pathname + 'startupireland/converted.json'
+    this.jsonPath = document.location.pathname + 'datasets/startupireland/converted.json'
   }
 
   /**
