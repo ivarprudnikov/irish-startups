@@ -8,7 +8,7 @@ import { Component } from '@angular/core';
   <header class="navbar navbar-default navbar-main navbar-static-top" role="banner">
     <div class="container">
       <div class="navbar-header">
-        <a [routerLink]="['/main']" class="navbar-brand logo">Irish Startups</a>
+        <a [routerLink]="['/main']" class="navbar-brand logo">Irish Startup Ecosystem</a>
       </div>
     </div>
   </header>
