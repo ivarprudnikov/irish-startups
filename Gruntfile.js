@@ -195,7 +195,8 @@ module.exports = function (grunt) {
           src: [
             '*.{ico,png,txt}',
             '{,**/}*.json',
-            'styles/fonts/{,*/}*.*'
+            'styles/fonts/{,*/}*.*',
+            'CNAME'
           ]
         }, {
           expand: true,
