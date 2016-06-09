@@ -43,7 +43,8 @@ class Social {
 class SocialTwitter {
   constructor(source){
     source = source || {}
-    this.handle = source.handle
+    if(source.handle)
+      this.handle = source.handle
   }
 }
 
@@ -57,13 +58,16 @@ class MetaInformation {
 
 class Location {
   constructor(lat, lon){
-    this.lat = lat
-    this.lon = lon
+    if(lat != null && lon != null){
+      this.lat = lat
+      this.lon = lon
+    }
   }
 }
 
 class Address {
   constructor(formatted){
-    this.formatted = formatted
+    if(formatted)
+      this.formatted = formatted
   }
 }

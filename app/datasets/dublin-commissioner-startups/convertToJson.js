@@ -22,7 +22,9 @@ var organisations = content.split('\n')
     }
   }))
   .reduce((memo, org, idx, arr) => {
-    memo[org.id] = org
+    if(org.name)
+      memo[org.id] = org
+
     return memo
   }, {})
 
