@@ -1,5 +1,37 @@
 var content = require('./source.json')
 var fs = require('fs')
+var Organisation = require('../Organisation')
+
+function convert(place){
+
+  let params = {
+    meta: {}
+  }
+
+  params.id = place._id
+
+  if(place.companyName) { params.name = place.companyName }
+
+  if(place.description) { params.description = place.description }
+
+  if(place.websiteURL) { params.url = place.websiteURL }
+
+  if(place.lat != null && place.lon != null){
+    params.location = {
+      lat: place.lat,
+      lon: place.lon
+    }
+  }
+
+  let tags = place.companyTags.filter(t => t !== "general");
+  if(tags.length){ params.meta.tags = tags; }
+
+  if(place.companyCategory) { params.meta.categories = [place.companyCategory] }
+
+  if(place.addressDisplay) { params.address = { formatted: place.addressDisplay } }
+
+  return new Organisation(params);
+}
 
 var places = Object.keys(content.categories)
 	.map(cat => content.categories[cat].tags)
@@ -9,52 +41,9 @@ var places = Object.keys(content.categories)
 	}, [])
 	.reduce((memo, place, idx, arr) => {
 
-    let id = place._id
+    let organisation = convert(place)
 
-    // convert location
-    let lat = place.lat
-    let lon = place.lon
-    if(lat != null && lon != null){
-      place.location = {
-        lat: lat,
-        lon: lon
-      }
-    }
-
-    // convert tags, remove `general` tag
-    let tags = place.companyTags.filter(t => t !== "general");
-    if(tags.length){ place.tags = tags; }
-
-    // convert url
-    let url = place.websiteURL
-    if(url) { place.url = url }
-
-    // convert name
-    let name = place.companyName
-    if(name) { place.name = name }
-
-    // convert category
-    let category = place.companyCategory
-    if(category) { place.category = category }
-
-    // convert address
-    let address = place.addressDisplay
-    if(address) { place.address = { formatted: address } }
-
-    // remove unnecessary details
-    [
-      '_id', 'additionDate', 'hiringPageURL', 'lat', 'lon', 'metaData', 'logoUID', 'companyTags', 'websiteURL',
-      'companyName', 'companyCategory', 'addressDisplay'
-    ].forEach(k => delete place[k])
-
-    // remove empty values
-    Object.keys(place).forEach((k) => {
-      if(place[k] === null || place[k] === "" || place[k] === "Please add description"){
-        delete place[k]
-      }
-    })
-
-		memo[id] = place
+		memo[organisation.id] = organisation
 		return memo
 	}, {})
 
