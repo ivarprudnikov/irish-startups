@@ -13,7 +13,7 @@ export class OrganisationService {
 
   constructor(api){
     this.api = api
-    this.jsonPath = document.location.pathname + 'datasets/startupireland/converted.json'
+    this.jsonPath = document.location.pathname + 'datasets/combined/converted.json'
   }
 
   /**
@@ -60,7 +60,7 @@ export class OrganisationService {
       let queryMatcher = new RegExp(query.query, "gi");
       allKeys = allKeys.filter(k => {
         let titleMatches = (function(){
-          return body[k].title && body[k].title.match(queryMatcher)
+          return body[k].name && body[k].name.match(queryMatcher)
         }())
         let descriptionMatches = (function(){
           return body[k].description && body[k].description.match(queryMatcher)
@@ -70,28 +70,36 @@ export class OrganisationService {
     }
 
     allKeys.forEach(k => {
-      let cat = body[k].category
-      if(cat){
-        let cachedCat = searchResultCategories[cat]
-        if(cachedCat){
-          searchResultCategories[cat] += 1
-        } else {
-          searchResultCategories[cat] = 1
-        }
+      let cat = body[k].meta.categories
+      if(cat && cat.length){
+        cat.forEach(c => {
+          let cachedCat = searchResultCategories[c]
+          if(cachedCat){
+            searchResultCategories[c] += 1
+          } else {
+            searchResultCategories[c] = 1
+          }
+        })
       }
     })
 
     if(query.categories.length){
       allKeys = allKeys.filter(k => {
-        return query.categories.indexOf(body[k].category) > -1
+        let categories = body[k].meta.categories
+        if(!categories && !categories.length)
+          return
+
+        let hasMatchingCategory = false
+        categories.forEach(c => {
+          if(query.categories.indexOf(c) > -1){
+            hasMatchingCategory = true
+          }
+        })
+        return hasMatchingCategory
       })
     }
 
-    let filteredItems = allKeys.slice(query.offset, query.offset + query.max).map(k => {
-      let item = body[k]
-      item._id = k
-      return item
-    });
+    let filteredItems = allKeys.slice(query.offset, query.offset + query.max).map(k => body[k]);
 
     return new Results(filteredItems, allKeys.length, searchResultCategories)
   }

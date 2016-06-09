@@ -29,4 +29,12 @@ var mapOfMergedOrganisations = allOrganisations
     return memo
   }, {})
 
-fs.writeFileSync('converted.json', JSON.stringify(mapOfMergedOrganisations, null, '  '), {encoding:'utf8'});
+var finalObjectWithSyncedIds = Object.keys(mapOfMergedOrganisations)
+  .reduce((memo, key, idx, arr) => {
+    let org = mapOfMergedOrganisations[key]
+    let id = org.id
+    memo[id] = org
+    return memo
+  }, {})
+
+fs.writeFileSync('converted.json', JSON.stringify(finalObjectWithSyncedIds, null, '  '), {encoding:'utf8'});

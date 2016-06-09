@@ -40,7 +40,7 @@ import { PaginationDirective } from './../util/paginationDirective'
               <md-list-item *ngFor="let item of items | mapToIterable" (click)="openItem(sidenav, item.value)" class="startup-item">
                 <h3 md-line class="title"> {{item.value.name}} </h3>
                 <p md-line class="description" *ngIf="item.value.description"> {{item.value.description}} </p>
-                <p md-line class="category"> {{item.value.category}} </p>
+                <p md-line class="category"> {{item.value.meta.categories}} </p>
               </md-list-item>
             </md-list>
 

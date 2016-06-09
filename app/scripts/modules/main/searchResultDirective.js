@@ -20,7 +20,8 @@ import { OrganisationService } from '../data/organisationService'
         <div *ngIf="!editing">
           <h2>{{ item.name }}</h2>
           <p *ngIf="item.url"><a target="_blank" href="{{ item.url }}">{{ item.url }}</a></p>
-          <p *ngIf="item.categoty">Category: {{ item.categoty }}</p>
+          <p *ngIf="item.meta && item.meta.categories">Categories: {{ item.meta.categories }}</p>
+          <p *ngIf="item.meta && item.meta.tags">Tags: {{ item.meta.tags }}</p>
           <p *ngIf="item.description">{{ item.description }}</p>
           <div *ngIf="item.location">
             <p>
@@ -45,9 +46,6 @@ import { OrganisationService } from '../data/organisationService'
             <md-input placeholder="Description" ngControl='description' [(ngModel)]="item.description"></md-input>
           </p>
           <p>
-            <md-input placeholder="Category" ngControl='category' [(ngModel)]="item.category"></md-input>
-          </p>
-          <p>
             <md-input placeholder="Address" ngControl='address' [(ngModel)]="item.address.formatted"></md-input>
           </p>
         </form>
@@ -69,7 +67,6 @@ export class SearchResultDirective {
       name: ["", Validators.required],
       url: ["", Validators.required],
       description: ["", Validators.required],
-      category: ["", Validators.required],
       address: ["", Validators.required]
     });
 
@@ -80,7 +77,7 @@ export class SearchResultDirective {
 
   storeItem(){
     if(this.itemForm.valid){
-      this.organisationService.update(this.item._id, this.item)
+      this.organisationService.update(this.item.id, this.item)
     }
   }
 
