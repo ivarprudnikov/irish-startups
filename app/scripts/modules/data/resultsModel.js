@@ -1,12 +1,7 @@
-import { Aggregation } from './aggregationModel'
-
 export class Results {
-  constructor(items, total, categories){
+  constructor(items, total, aggregations){
     this.items = items
     this.total = total
-
-    let resultCategories = categories || {}
-    this.aggregations = Object.keys(resultCategories)
-      .map(k => new Aggregation(k, resultCategories[k]));
+    this.aggregations = aggregations || new Aggregations();
   }
 }

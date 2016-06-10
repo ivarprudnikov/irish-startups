@@ -3,6 +3,8 @@ import { map } from 'rxjs/add/operator/map';
 import { Results } from './resultsModel'
 import { Query } from './queryModel'
 import { ApiService } from './apiService'
+import { Aggregation } from './aggregationModel'
+import { Aggregations } from './aggregationsModel'
 
 @Injectable()
 export class OrganisationService {
@@ -52,9 +54,41 @@ export class OrganisationService {
     return this.api.getJson(this.jsonPath)
   }
 
+  extractMetaAggregations(searchResponse, type, metaName, max){
+    let allKeys = Object.keys(searchResponse);
+    let aggs = {}
+    allKeys.forEach(k => {
+      let itemMeta = searchResponse[k].meta[metaName]
+      if (itemMeta && itemMeta.length) {
+        itemMeta.forEach(val => {
+          let count = aggs[val]
+          if (count) {
+            aggs[val] += 1
+          } else {
+            aggs[val] = 1
+          }
+        })
+      }
+    })
+
+    let resp = Object.keys(aggs)
+      .map(val => new Aggregation(type, val, aggs[val]))
+      .filter(agg => agg.count > 0)
+      .sort((a,b) => b.count - a.count)
+      .slice(0, max);
+
+    return resp;
+  }
+
+  extractAggregations(searchResponse){
+    let categories = this.extractMetaAggregations(searchResponse, 'category', 'categories', 15)
+    let tags = this.extractMetaAggregations(searchResponse, 'tag', 'tags', 15)
+    return new Aggregations(categories, tags)
+  }
+
   filterByQuery(body, query) {
+
     let allKeys = Object.keys(body);
-    let searchResultCategories = {}
 
     if(query.query){
       let queryMatcher = new RegExp(query.query, "gi");
@@ -69,39 +103,36 @@ export class OrganisationService {
       })
     }
 
-    allKeys.forEach(k => {
-      let cat = body[k].meta.categories
-      if(cat && cat.length){
-        cat.forEach(c => {
-          let cachedCat = searchResultCategories[c]
-          if(cachedCat){
-            searchResultCategories[c] += 1
-          } else {
-            searchResultCategories[c] = 1
+    let aggregatableResultSet = allKeys.reduce((memo, key) => {
+      memo[key] = body[key];
+      return memo;
+    }, {})
+
+    let aggregations = this.extractAggregations(aggregatableResultSet);
+
+    ['categories', 'tags'].forEach(aggregationType => {
+
+      if(query[aggregationType].length){
+        allKeys = allKeys.filter(k => {
+          let metaValues = body[k].meta[aggregationType]
+          if(!metaValues && !metaValues.length){
+            return false
           }
+
+          let hasMatchingMetaValue = false
+          metaValues.forEach(c => {
+            if(query[aggregationType].indexOf(c) > -1){
+              hasMatchingMetaValue = true
+            }
+          })
+          return hasMatchingMetaValue
         })
       }
     })
 
-    if(query.categories.length){
-      allKeys = allKeys.filter(k => {
-        let categories = body[k].meta.categories
-        if(!categories && !categories.length)
-          return
-
-        let hasMatchingCategory = false
-        categories.forEach(c => {
-          if(query.categories.indexOf(c) > -1){
-            hasMatchingCategory = true
-          }
-        })
-        return hasMatchingCategory
-      })
-    }
-
     let filteredItems = allKeys.slice(query.offset, query.offset + query.max).map(k => body[k]);
 
-    return new Results(filteredItems, allKeys.length, searchResultCategories)
+    return new Results(filteredItems, allKeys.length, aggregations)
   }
 
 }

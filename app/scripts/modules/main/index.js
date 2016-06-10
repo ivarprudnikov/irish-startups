@@ -5,6 +5,7 @@ import { MD_LIST_DIRECTIVES } from '@angular2-material/list';
 import { MdProgressBar } from '@angular2-material/progress-bar';
 import { MD_SIDENAV_DIRECTIVES } from '@angular2-material/sidenav'
 import { OrganisationService } from '../data/organisationService'
+import { Aggregations } from '../data/aggregationsModel'
 import { MapToIterablePipe } from '../util/mapToIterablePipe'
 import { SearchCommandDirective } from './searchCommand'
 import { SearchResultDirective } from './searchResultDirective'
@@ -79,7 +80,7 @@ export class Main {
     results = results || {};
     this.items = results.items || [];
     this.total = results.total || this.items.length
-    this.aggregations = results.aggregations || []
+    this.aggregations = results.aggregations || new Aggregations()
     this.setLoader(false)
   }
 

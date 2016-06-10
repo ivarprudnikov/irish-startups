@@ -5,6 +5,7 @@ import { MdButton } from '@angular2-material/button';
 import { MdCheckbox } from '@angular2-material/checkbox';
 import { MD_PROGRESS_CIRCLE_DIRECTIVES } from '@angular2-material/progress-circle';
 import { EventEmitter } from '@angular/common/src/facade/async'
+import { Aggregations } from '../data/aggregationsModel'
 
 @Component({
   selector: 'search-command',
@@ -16,17 +17,36 @@ import { EventEmitter } from '@angular/common/src/facade/async'
       <p>
         <md-input placeholder="Search query ..." ngControl="query"></md-input>
       </p>
+
       <fieldset>
 
-        <template ngFor let-cat [ngForOf]="_aggregations" let-i="index">
-          <p *ngIf="i < 5 || showMore">
+        <legend>Categories</legend>
+
+        <template ngFor let-cat [ngForOf]="_aggregations.categories" let-i="index">
+          <p *ngIf="i < 5 || showMoreCategories">
             <md-checkbox ngControl="{{ cat.controlName }}" [disabled]="cat.disabled && !searchForm.value[cat.controlName]">
               {{ cat.name }} <span *ngIf="!isLoading">({{ cat.count }})</span> <md-spinner *ngIf="isLoading"></md-spinner>
             </md-checkbox>
           </p>
         </template>
 
-        <a href="javascript:void(0)" *ngIf="!showMore && _aggregations.length" (click)="showMore=true">More aggregations ...</a>
+        <a href="javascript:void(0)" *ngIf="!showMoreCategories && _aggregations.categories.length" (click)="showMoreCategories=true">More categories ({{_aggregations.categories.length}}) ...</a>
+      </fieldset>
+
+      <fieldset>
+
+        <legend>Tags</legend>
+
+        <template ngFor let-tag [ngForOf]="_aggregations.tags" let-i="index">
+          <p *ngIf="i < 5 || showMoreTags">
+            <md-checkbox ngControl="{{ tag.controlName }}" [disabled]="tag.disabled && !searchForm.value[tag.controlName]">
+              {{ tag.name }} <span *ngIf="!isLoading">({{ tag.count }})</span> <md-spinner *ngIf="isLoading"></md-spinner>
+            </md-checkbox>
+          </p>
+        </template>
+
+        <a href="javascript:void(0)" *ngIf="!showMoreTags && _aggregations.tags.length" (click)="showMoreTags=true">More tags ({{_aggregations.tags.length}}) ...</a>
+
       </fieldset>
 
       <br>
@@ -39,7 +59,7 @@ export class SearchCommandDirective {
 
   constructor(){
     this.params = {}
-    this._aggregations = [];
+    this._aggregations = new Aggregations();
     this.onParamsChange = new EventEmitter(false);
 
     this.searchForm = new ControlGroup({
@@ -53,37 +73,40 @@ export class SearchCommandDirective {
 
   set aggregations(val){
 
-    if(!this._aggregations || !this._aggregations.length){
-      this._aggregations = []
+    if(!this._aggregations){
+      this._aggregations = new Aggregations()
     }
 
-    if(!val || !val.length){
+    if(!val){
       this.isLoading = true
-      val = []
+      val = new Aggregations()
     } else {
       this.isLoading = false
     }
 
-    val.forEach(newCat => {
+    ['categories', 'tags'].forEach(aggregationType => {
 
-      newCat.controlName = 'category:' + newCat.name
+      val[aggregationType].forEach(newAgg => {
 
-      let alreadyExisting = this._aggregations.filter(existingCat => existingCat.name === newCat.name)[0]
-      if(!alreadyExisting){
-        this._aggregations.push(newCat)
-        this.searchForm.addControl(newCat.controlName, new Control(""))
-      } else {
-        alreadyExisting.count = newCat.count
-        alreadyExisting.disabled = false
-      }
-    })
+        newAgg.controlName = newAgg.type + ':' + newAgg.name
 
-    this._aggregations.forEach(existingCat => {
-      let inNewList = val.filter(newCat => existingCat.name === newCat.name)[0]
-      if(!inNewList){
-        existingCat.disabled = true
-        existingCat.count = 0
-      }
+        let alreadyExisting = this._aggregations[aggregationType]
+          .filter(existingAgg => existingAgg.name === newAgg.name)[0]
+
+        if(!alreadyExisting){
+          this._aggregations[aggregationType].push(newAgg)
+          this.searchForm.addControl(newAgg.controlName, new Control(""))
+        } else {
+          alreadyExisting.count = newAgg.count
+        }
+      })
+
+      this._aggregations[aggregationType].forEach(existingAgg => {
+        let inNewList = val[aggregationType].filter(newAgg => existingAgg.name === newAgg.name)[0]
+        if(!inNewList){
+          existingAgg.count = 0
+        }
+      })
     })
 
   }

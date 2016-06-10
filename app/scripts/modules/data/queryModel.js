@@ -12,8 +12,12 @@ export class Query {
     this.categories = Object.keys(params)
       .filter(k => k.match(/^category:/) && params[k])
       .map(k => k.split(':')[1])
-
     if(!this.categories) this.categories = [];
+
+    this.tags = Object.keys(params)
+      .filter(k => k.match(/^tag:/) && params[k])
+      .map(k => k.split(':')[1])
+    if(!this.tags) this.tags = [];
 
     this.max = Math.min( Query.asInt(params.max, 10), 100 )
     this.offset = Query.asInt(params.offset, 0)
