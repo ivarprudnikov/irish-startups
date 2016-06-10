@@ -66,8 +66,19 @@ export class SearchCommandDirective {
       query: new Control("")
     })
 
+    this.emitTimeout = null
+    this.emitTimeoutDuration = 300
+
     this.searchForm.valueChanges.subscribe(val => {
-      this.emitParams(val)
+
+      if(this.emitTimeout){
+        clearTimeout(this.emitTimeout)
+      }
+
+      this.emitTimeout = setTimeout(() => {
+        this.emitParams(val)
+      }, this.emitTimeoutDuration)
+
     })
   }
 
