@@ -13,7 +13,8 @@ if(CONFIG.environment === 'prod'){
 
 bootstrap(App, [
   ROUTER_PROVIDERS,
-  provide(APP_BASE_HREF, {useValue: '#!/'}),
+  provide(APP_BASE_HREF, {useValue: '/'}),
+  provide(LocationStrategy, {useClass: HashLocationStrategy}),
   HTTP_PROVIDERS,
   APP_DATA_PROVIDERS
 ]).catch(err => console.error(err));

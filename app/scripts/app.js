@@ -1,6 +1,7 @@
+import { About } from './modules/about/index'
 import { Main } from './modules/main/index'
 import { Header } from './modules/header/index'
-import { Routes, Router, ROUTER_DIRECTIVES } from '@angular/router';
+import { Routes, Router, RouteSegment, ROUTER_DIRECTIVES } from '@angular/router';
 import { Component } from '@angular/core';
 
 @Component({
@@ -13,21 +14,26 @@ import { Component } from '@angular/core';
 })
 @Routes([
   { path: '/main', component: Main },
-  { path: '*', component: Main }
+  { path: '/', component: About }
 ])
 export class App {
 
   static get parameters() {
-    return [[Router]];
+    return [[Router, RouteSegment]];
   }
 
-  constructor(router){
+  constructor(router, routeSegment){
     this.router = router
+    this.routeSegment = routeSegment
+
+    console.log('router',router)
+    console.log('routeSegment',routeSegment)
+    window.routeSegment = routeSegment
   }
 
   ngOnInit() {
     // TODO make sure params are not removed
-    this.router.navigate(['/main']);
+    //this.router.navigate(['/about']);
   }
 
 }
