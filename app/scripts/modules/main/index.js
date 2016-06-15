@@ -102,7 +102,7 @@ export class Main {
           results => this.setItems(results),
           error => this.setError(error)
         )
-    }, 1000)
+    }, 300)
   }
 
   onFormSubmit(data){

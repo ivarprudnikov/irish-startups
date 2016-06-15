@@ -25,15 +25,9 @@ export class App {
   constructor(router, routeSegment){
     this.router = router
     this.routeSegment = routeSegment
-
-    console.log('router',router)
-    console.log('routeSegment',routeSegment)
-    window.routeSegment = routeSegment
   }
 
   ngOnInit() {
-    // TODO make sure params are not removed
-    //this.router.navigate(['/about']);
   }
 
 }

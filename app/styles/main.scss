@@ -1,5 +1,6 @@
 @import "bootstrap";
 @import "search";
+@import "button_overrides";
 
 html, body, .body-view {
   height: 100%;
@@ -63,5 +64,29 @@ main-section md-sidenav-layout md-sidenav {
   }
 }
 
+about-section {
+  min-height: 100%;
+  display: block;
+  color: white;
+  background-color: gray;
+  padding: 40px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-image: url(../images/dublin.jpg);
+  background-position: center;
 
+  .lead {
+    margin-bottom: 40px;
+  }
+
+  .aggregations {
+    margin-bottom: 40px;
+  }
+
+  .btn {
+    min-width: 300px;
+    border-color: white;
+    color: white;
+  }
+}
 

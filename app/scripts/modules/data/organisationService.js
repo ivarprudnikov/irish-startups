@@ -54,7 +54,7 @@ export class OrganisationService {
     return this.api.getJson(this.jsonPath)
   }
 
-  extractMetaAggregations(searchResponse, type, metaName, max){
+  extractMetaAggregations(searchResponse, type, metaName){
     let allKeys = Object.keys(searchResponse);
     let aggs = {}
     allKeys.forEach(k => {
@@ -75,15 +75,14 @@ export class OrganisationService {
       .map(val => new Aggregation(type, val, aggs[val]))
       .filter(agg => agg.count > 0)
       .sort((a,b) => b.count - a.count)
-      .slice(0, max);
 
     return resp;
   }
 
   extractAggregations(searchResponse){
-    let categories = this.extractMetaAggregations(searchResponse, 'category', 'categories', 15)
-    let tags = this.extractMetaAggregations(searchResponse, 'tag', 'tags', 15)
-    return new Aggregations(categories, tags)
+    let categories = this.extractMetaAggregations(searchResponse, 'category', 'categories')
+    let tags = this.extractMetaAggregations(searchResponse, 'tag', 'tags')
+    return new Aggregations(categories.slice(0, 15), categories.length, tags.slice(0, 15), tags.length)
   }
 
   filterByQuery(body, query) {

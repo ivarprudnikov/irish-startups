@@ -1,0 +1,31 @@
+.btn-bordered-white {
+  @include button-variant(white, transparent, white);
+}
+
+.btn {
+  &.btn-default,
+  &.btn-bordered-white,
+  &.btn-primary,
+  &.btn-success,
+  &.btn-warning,
+  &.btn-danger,
+  &.btn-info {
+  	border-radius: 3px;
+    border-width: 2px;
+  }
+}
+
+.input-group-btn {
+  .btn {
+    &.btn-default,
+    &.btn-bordered-white,
+    &.btn-primary,
+    &.btn-success,
+    &.btn-warning,
+    &.btn-danger,
+    &.btn-info {
+      border-width: 1px;
+    }
+  }
+}
+
