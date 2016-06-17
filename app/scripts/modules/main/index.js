@@ -25,11 +25,11 @@ import { PaginationDirective } from './../util/paginationDirective'
       <section class="container search-results">
 
         <div class="row">
-          <div class="col-sm-3">
+          <div class="col-sm-4 col-md-3">
             <search-command [aggregations]="aggregations" (onParamsChange)="onFormSubmit($event)"></search-command>
           </div>
 
-          <div class="col-sm-9">
+          <div class="col-sm-8 col-md-9">
 
             <md-list>
 

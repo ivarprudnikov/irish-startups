@@ -18,36 +18,39 @@ import { Aggregations } from '../data/aggregationsModel'
         <md-input placeholder="Search query ..." ngControl="query"></md-input>
       </p>
 
-      <fieldset>
+      <div class="panel panel-default" *ngIf="_aggregations.categories.length">
+        <header class="panel-heading">Filter by category</header>
+        <ul class="list-group">
+          <template ngFor let-cat [ngForOf]="_aggregations.categories" let-i="index">
+            <li class="list-group-item" *ngIf="i < 5 || showMoreCategories">
+              <md-checkbox ngControl="{{ cat.controlName }}" [disabled]="cat.disabled && !searchForm.value[cat.controlName]">
+                {{ cat.name }} <span *ngIf="!isLoading">({{ cat.count }})</span> <md-spinner *ngIf="isLoading"></md-spinner>
+              </md-checkbox>
+            </li>
+          </template>
+        </ul>
+        <footer class="panel-footer">
+          <a href="javascript:void(0)" *ngIf="!showMoreCategories" (click)="showMoreCategories=true">Show more categories (total {{_aggregations.categories.length}})</a>
+          <a href="javascript:void(0)" *ngIf="showMoreCategories" (click)="showMoreCategories=false">Show less categories</a>
+        </footer>
+      </div>
 
-        <legend>Categories</legend>
-
-        <template ngFor let-cat [ngForOf]="_aggregations.categories" let-i="index">
-          <p *ngIf="i < 5 || showMoreCategories">
-            <md-checkbox ngControl="{{ cat.controlName }}" [disabled]="cat.disabled && !searchForm.value[cat.controlName]">
-              {{ cat.name }} <span *ngIf="!isLoading">({{ cat.count }})</span> <md-spinner *ngIf="isLoading"></md-spinner>
-            </md-checkbox>
-          </p>
-        </template>
-
-        <a href="javascript:void(0)" *ngIf="!showMoreCategories && _aggregations.categories.length" (click)="showMoreCategories=true">More categories ({{_aggregations.categories.length}}) ...</a>
-      </fieldset>
-
-      <fieldset>
-
-        <legend>Tags</legend>
-
-        <template ngFor let-tag [ngForOf]="_aggregations.tags" let-i="index">
-          <p *ngIf="i < 5 || showMoreTags">
-            <md-checkbox ngControl="{{ tag.controlName }}" [disabled]="tag.disabled && !searchForm.value[tag.controlName]">
-              {{ tag.name }} <span *ngIf="!isLoading">({{ tag.count }})</span> <md-spinner *ngIf="isLoading"></md-spinner>
-            </md-checkbox>
-          </p>
-        </template>
-
-        <a href="javascript:void(0)" *ngIf="!showMoreTags && _aggregations.tags.length" (click)="showMoreTags=true">More tags ({{_aggregations.tags.length}}) ...</a>
-
-      </fieldset>
+      <div class="panel panel-default" *ngIf="_aggregations.tags.length">
+        <header class="panel-heading">Filter by tag</header>
+        <ul class="list-group">
+          <template ngFor let-tag [ngForOf]="_aggregations.tags" let-i="index">
+            <li class="list-group-item" *ngIf="i < 5 || showMoreTags">
+              <md-checkbox ngControl="{{ tag.controlName }}" [disabled]="tag.disabled && !searchForm.value[tag.controlName]">
+                {{ tag.name }} <span *ngIf="!isLoading">({{ tag.count }})</span> <md-spinner *ngIf="isLoading"></md-spinner>
+              </md-checkbox>
+            </li>
+          </template>
+        </ul>
+        <footer class="panel-footer">
+          <a href="javascript:void(0)" *ngIf="!showMoreTags" (click)="showMoreTags=true">Show more tags (total {{_aggregations.tags.length}})</a>
+          <a href="javascript:void(0)" *ngIf="showMoreTags" (click)="showMoreTags=false">Show less tags</a>
+        </footer>
+      </div>
 
       <br>
 
