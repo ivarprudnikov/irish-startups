@@ -1,9 +1,8 @@
-import { Routes, Router, RouteSegment } from '@angular/router';
+import { ROUTER_DIRECTIVES, Routes, Router, RouteSegment } from '@angular/router';
 import { Component } from '@angular/core';
 import { MdButton } from '@angular2-material/button';
 import { MD_LIST_DIRECTIVES } from '@angular2-material/list';
 import { MdProgressBar } from '@angular2-material/progress-bar';
-import { MD_SIDENAV_DIRECTIVES } from '@angular2-material/sidenav'
 import { OrganisationService } from '../data/organisationService'
 import { Aggregations } from '../data/aggregationsModel'
 import { MapToIterablePipe } from '../util/mapToIterablePipe'
@@ -13,45 +12,37 @@ import { PaginationDirective } from './../util/paginationDirective'
 
 @Component({
   selector: 'main-section',
-  directives: [ MdButton, MdProgressBar, MD_LIST_DIRECTIVES, MD_SIDENAV_DIRECTIVES, PaginationDirective, SearchCommandDirective, SearchResultDirective ],
+  directives: [ MdButton, MdProgressBar, ROUTER_DIRECTIVES, MD_LIST_DIRECTIVES, PaginationDirective, SearchCommandDirective, SearchResultDirective ],
   pipes: [ MapToIterablePipe ],
   template: `
-    <md-sidenav-layout>
+    <section class="container search-results">
 
-      <md-sidenav #sidenav mode="over" align="end">
-        <search-result [item]="selected"></search-result>
-      </md-sidenav>
-
-      <section class="container search-results">
-
-        <div class="row">
-          <div class="col-sm-4 col-md-3">
-            <search-command [aggregations]="aggregations" (onParamsChange)="onFormSubmit($event)"></search-command>
-          </div>
-
-          <div class="col-sm-8 col-md-9">
-
-            <md-list>
-
-              <md-progress-bar *ngIf="loading" mode="indeterminate"></md-progress-bar>
-
-              <h3 *ngIf="errorMessage" md-subheader>{{errorMessage}}</h3>
-              <h3 *ngIf="total" md-subheader>Found {{total}} results</h3>
-
-              <md-list-item *ngFor="let item of items | mapToIterable" (click)="openItem(sidenav, item.value)" class="startup-item">
-                <h3 md-line class="title"> {{item.value.name}} </h3>
-                <p md-line class="description" *ngIf="item.value.description"> {{item.value.description}} </p>
-                <p md-line class="category"> {{item.value.meta.categories}} </p>
-              </md-list-item>
-            </md-list>
-
-            <pagination *ngIf="!loading" [total]="total" [max]="params.max" [offset]="params.offset" (onParamsChange)="paginate($event)"></pagination>
-
-          </div>
+      <div class="row">
+        <div class="col-sm-4 col-md-3">
+          <search-command [aggregations]="aggregations" (onParamsChange)="onFormSubmit($event)"></search-command>
         </div>
-      </section>
 
-    <md-sidenav-layout>
+        <div class="col-sm-8 col-md-9">
+
+          <md-list>
+
+            <md-progress-bar *ngIf="loading" mode="indeterminate"></md-progress-bar>
+
+            <h3 *ngIf="errorMessage" md-subheader>{{errorMessage}}</h3>
+            <h3 *ngIf="total" md-subheader>Found {{total}} results</h3>
+
+            <md-list-item *ngFor="let item of items | mapToIterable" class="startup-item">
+              <a md-line class="title" [routerLink]="['/organisation', item.value.id]">{{item.value.name}}</a>
+              <p md-line class="description" *ngIf="item.value.description"> {{item.value.description}} </p>
+              <p md-line class="category"> {{item.value.meta.categories}} </p>
+            </md-list-item>
+          </md-list>
+
+          <pagination *ngIf="!loading" [total]="total" [max]="params.max" [offset]="params.offset" (onParamsChange)="paginate($event)"></pagination>
+
+        </div>
+      </div>
+    </section>
   `
 })
 export class Main {
@@ -116,12 +107,6 @@ export class Main {
     this.params.offset = params.offset
     this.list(this.params)
     // TODO this.router.navigate(['/main', params]);
-  }
-
-  openItem(sidenav, item){
-    this.selected = item
-    sidenav.open()
-    console.debug('item', item)
   }
 
 }
