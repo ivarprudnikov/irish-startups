@@ -1,7 +1,7 @@
 import { About } from './modules/about/index'
 import { Main } from './modules/main/index'
 import { Header } from './modules/header/index'
-import { Organisation } from './modules/organisation/index'
+import { OrganisationCmp } from './modules/organisation/index'
 import { Routes, Router, RouteSegment, ROUTER_DIRECTIVES } from '@angular/router';
 import { Component } from '@angular/core';
 
@@ -14,7 +14,7 @@ import { Component } from '@angular/core';
   directives: [ Header, ROUTER_DIRECTIVES ]
 })
 @Routes([
-  { path: '/organisation/:id', component: Organisation },
+  { path: '/organisation/:id', component: OrganisationCmp },
   { path: '/main', component: Main },
   { path: '/', component: About }
 ])

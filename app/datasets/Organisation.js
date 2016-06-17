@@ -12,6 +12,8 @@ module.exports = class Organisation {
 
   constructor(source){
 
+    if(!source) source = {};
+
     this.id = source.id || uuid.v4()
 
     this.name = source.name
@@ -22,17 +24,10 @@ module.exports = class Organisation {
     if(source.url)
       this.url = this.parseUrl(source.url)
 
-    if(source.meta)
-      this.meta = new MetaInformation(source.meta)
-
-    if(source.social)
-      this.social = new Social(source.social)
-
-    if(source.address)
-      this.address = new Address(source.address.formatted)
-
-    if(source.location)
-      this.location = new Location(source.location.lat, source.location.lon)
+    this.meta = new MetaInformation(source.meta)
+    this.social = new Social(source.social)
+    this.address = new Address(source.address)
+    this.location = new Location(source.location)
   }
 
   merge(other){
@@ -83,9 +78,9 @@ class SocialTwitter {
 
 class MetaInformation {
   constructor(source){
-    this.tags = source.tags || []
-    this.categories = source.categories || []
-    this.sectors = source.sectors || []
+    this.tags = (source && source.tags) || []
+    this.categories = (source && source.categories) || []
+    this.sectors = (source && source.sectors) || []
   }
   mergeArrayProperty(prop, val){
     if(!this[prop]) this[prop] = []
@@ -104,10 +99,10 @@ class MetaInformation {
 }
 
 class Location {
-  constructor(lat, lon){
-    if(lat != null && lon != null){
-      this.lat = lat
-      this.lon = lon
+  constructor(obj){
+    if(obj && obj.lat != null && obj.lon != null){
+      this.lat = obj.lat
+      this.lon = obj.lon
     }
   }
   merge(other){
@@ -120,9 +115,9 @@ class Location {
 }
 
 class Address {
-  constructor(formatted){
-    if(formatted)
-      this.formatted = formatted
+  constructor(obj){
+    if(obj && obj.formatted)
+      this.formatted = obj.formatted
   }
   merge(other) {
     if (!this.formatted) this.formatted = other.formatted

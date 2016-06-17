@@ -5,6 +5,7 @@ import { Query } from './queryModel'
 import { ApiService } from './apiService'
 import { Aggregation } from './aggregationModel'
 import { Aggregations } from './aggregationsModel'
+let Organisation = require('../../../datasets/Organisation')
 
 @Injectable()
 export class OrganisationService {
@@ -32,7 +33,7 @@ export class OrganisationService {
    */
   findOne(id){
     return this.fetchAll()
-      .map(res => res[id])
+      .map(res => new Organisation(res[id]))
   }
 
   save(data){
@@ -44,7 +45,8 @@ export class OrganisationService {
    * @returns {Observable}
    */
   update(id, data){
-    return this.api.update(this.jsonPath, id, data)
+    let asJson = JSON.parse(JSON.stringify(data))
+    return this.api.update(this.jsonPath, id, asJson)
   }
 
   /**

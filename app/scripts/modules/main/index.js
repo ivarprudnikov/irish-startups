@@ -7,12 +7,11 @@ import { OrganisationService } from '../data/organisationService'
 import { Aggregations } from '../data/aggregationsModel'
 import { MapToIterablePipe } from '../util/mapToIterablePipe'
 import { SearchCommandDirective } from './searchCommand'
-import { SearchResultDirective } from './searchResultDirective'
 import { PaginationDirective } from './../util/paginationDirective'
 
 @Component({
   selector: 'main-section',
-  directives: [ MdButton, MdProgressBar, ROUTER_DIRECTIVES, MD_LIST_DIRECTIVES, PaginationDirective, SearchCommandDirective, SearchResultDirective ],
+  directives: [ MdButton, MdProgressBar, ROUTER_DIRECTIVES, MD_LIST_DIRECTIVES, PaginationDirective, SearchCommandDirective ],
   pipes: [ MapToIterablePipe ],
   template: `
     <section class="container search-results">
