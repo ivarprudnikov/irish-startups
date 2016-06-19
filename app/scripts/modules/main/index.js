@@ -81,7 +81,7 @@ export class Main {
 
   list(params){
 
-    console.debug('search params', params)
+    console.debug('list with search params', params)
 
     this.setItems({})
     this.setLoader(true)
@@ -102,10 +102,13 @@ export class Main {
   }
 
   paginate(params){
-    this.params.max = params.max
-    this.params.offset = params.offset
-    this.list(this.params)
-    // TODO this.router.navigate(['/main', params]);
+
+    if(this.params.max != params.max || this.params.offset != params.offset){
+      this.params.max = params.max
+      this.params.offset = params.offset
+      this.list(this.params)
+    }
+
   }
 
 }

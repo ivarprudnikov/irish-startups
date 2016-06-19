@@ -73,11 +73,9 @@ export class SearchCommandDirective {
     this.emitTimeoutDuration = 300
 
     this.searchForm.valueChanges.subscribe(val => {
-
       if(this.emitTimeout){
         clearTimeout(this.emitTimeout)
       }
-
       this.emitTimeout = setTimeout(() => {
         this.emitParams(val)
       }, this.emitTimeoutDuration)
@@ -130,7 +128,20 @@ export class SearchCommandDirective {
   }
 
   emitParams(data){
-    Object.keys(data).forEach(k => this.params[k] = data[k])
+    console.debug('emit search form params');
+
+    Object.keys(data).forEach(k => {
+
+      let v = data[k];
+
+      // hack around mdCheckboxChange object leak into form values
+      if (typeof v === 'object') {
+        this.params[k] = v.checked
+      } else {
+        this.params[k] = v
+      }
+
+    })
     this.onParamsChange.emit(this.params);
   }
 
